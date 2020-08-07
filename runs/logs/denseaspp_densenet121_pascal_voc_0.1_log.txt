@@ -8,3 +8,6 @@
 2020-08-07 18:43:28,723 semantic_segmentation INFO: Iters: 50/54900 || Lr: 0.000100 || Loss: 1.8229 || Cost Time: 0:00:42 || Estimated Time: 13:00:52
 2020-08-07 18:43:34,491 semantic_segmentation INFO: Iters: 60/54900 || Lr: 0.000100 || Loss: 0.6052 || Cost Time: 0:00:48 || Estimated Time: 12:18:28
 2020-08-07 18:43:40,526 semantic_segmentation INFO: Iters: 70/54900 || Lr: 0.000100 || Loss: 1.2936 || Cost Time: 0:00:54 || Estimated Time: 11:51:39
+2020-08-07 18:43:47,179 semantic_segmentation INFO: Iters: 80/54900 || Lr: 0.000100 || Loss: 0.6634 || Cost Time: 0:01:01 || Estimated Time: 11:38:34
+2020-08-07 18:43:53,348 semantic_segmentation INFO: Iters: 90/54900 || Lr: 0.000100 || Loss: 1.3775 || Cost Time: 0:01:07 || Estimated Time: 11:23:27
+2020-08-07 18:44:00,660 semantic_segmentation INFO: Iters: 100/54900 || Lr: 0.000100 || Loss: 0.7462 || Cost Time: 0:01:14 || Estimated Time: 11:21:46
