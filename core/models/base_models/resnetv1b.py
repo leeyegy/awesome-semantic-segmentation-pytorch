@@ -13,7 +13,6 @@ model_urls = {
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
 }
 
-
 class BasicBlockV1b(nn.Module):
     expansion = 1
 
@@ -238,6 +237,7 @@ def resnet50_v1s(pretrained=False, root='~/.torch/models', **kwargs):
         from ..model_store import get_resnet_file
         model.load_state_dict(torch.load(get_resnet_file('resnet50', root=root)), strict=False)
     return model
+
 
 
 def resnet101_v1s(pretrained=False, root='~/.torch/models', **kwargs):

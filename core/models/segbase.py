@@ -3,6 +3,8 @@ import torch.nn as nn
 
 from ..nn import JPU
 from .base_models.resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
+# from .base_models.resnest import  resnest50, resnest101, resnest200, resnest269
+from .base_models.resnet import  resnet18,resnet50,resnet101,resnet152
 
 __all__ = ['SegBaseModel']
 
@@ -23,11 +25,22 @@ class SegBaseModel(nn.Module):
         self.aux = aux
         self.nclass = nclass
         if backbone == 'resnet50':
-            self.pretrained = resnet50_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            # self.pretrained = resnet50_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            self.pretrained = resnet50(pretrained=pretrained_base, **kwargs)
         elif backbone == 'resnet101':
-            self.pretrained = resnet101_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            # self.pretrained = resnet101_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            self.pretrained = resnet101(pretrained=pretrained_base, **kwargs)
         elif backbone == 'resnet152':
-            self.pretrained = resnet152_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            # self.pretrained = resnet152_v1s(pretrained=pretrained_base, dilated=dilated, **kwargs)
+            self.pretrained = resnet152(pretrained=pretrained_base, **kwargs)
+        # elif backbone == 'resnest50':
+        #     self.pretrained = resnest50(pretrained=pretrained_base, dilated=dilated, **kwargs)
+        # elif backbone == 'resnest101':
+        #     self.pretrained = resnest101(pretrained=pretrained_base, dilated=dilated, **kwargs)
+        # elif backbone == 'resnest200':
+        #     self.pretrained = resnest200(pretrained=pretrained_base, dilated=dilated, **kwargs)
+        # elif backbone == 'resnest269':
+        #     self.pretrained = resnest269(pretrained=pretrained_base, dilated=dilated, **kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
 
