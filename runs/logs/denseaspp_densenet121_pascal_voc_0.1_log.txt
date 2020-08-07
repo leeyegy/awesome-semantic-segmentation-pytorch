@@ -1,0 +1,10 @@
+2020-08-07 18:42:39,742 semantic_segmentation INFO: Using 1 GPUs
+2020-08-07 18:42:39,743 semantic_segmentation INFO: Namespace(aux=False, aux_weight=0.4, backbone='densenet121', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=150, jpu=False, local_rank=0, log_dir='../runs/logs/', log_iter=10, lr=0.0001, model='denseaspp', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume=None, save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=False, val_backdoor_target=False, val_epoch=1, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-08-07 18:42:46,013 semantic_segmentation INFO: Start training, Total Epochs: 150 = Total Iterations 54900
+2020-08-07 18:43:01,448 semantic_segmentation INFO: Iters: 10/54900 || Lr: 0.000100 || Loss: 1.5846 || Cost Time: 0:00:15 || Estimated Time: 23:32:03
+2020-08-07 18:43:08,730 semantic_segmentation INFO: Iters: 20/54900 || Lr: 0.000100 || Loss: 0.9404 || Cost Time: 0:00:22 || Estimated Time: 17:18:56
+2020-08-07 18:43:16,656 semantic_segmentation INFO: Iters: 30/54900 || Lr: 0.000100 || Loss: 2.2771 || Cost Time: 0:00:30 || Estimated Time: 15:34:06
+2020-08-07 18:43:23,035 semantic_segmentation INFO: Iters: 40/54900 || Lr: 0.000100 || Loss: 2.4246 || Cost Time: 0:00:37 || Estimated Time: 14:06:15
+2020-08-07 18:43:28,723 semantic_segmentation INFO: Iters: 50/54900 || Lr: 0.000100 || Loss: 1.8229 || Cost Time: 0:00:42 || Estimated Time: 13:00:52
+2020-08-07 18:43:34,491 semantic_segmentation INFO: Iters: 60/54900 || Lr: 0.000100 || Loss: 0.6052 || Cost Time: 0:00:48 || Estimated Time: 12:18:28
+2020-08-07 18:43:40,526 semantic_segmentation INFO: Iters: 70/54900 || Lr: 0.000100 || Loss: 1.2936 || Cost Time: 0:00:54 || Estimated Time: 11:51:39

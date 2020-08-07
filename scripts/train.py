@@ -98,6 +98,14 @@ def parse_args():
                         help='run validation every val-epoch')
     parser.add_argument('--skip-val', action='store_true', default=False,
                         help='skip validation during training')
+
+    # backdoor attack
+    parser.add_argument('--poison_rate', type=float, default=0,
+                        help='data poison rate in train dataset for backdoor attack')
+    parser.add_argument("--val_backdoor", action="store_true", default=False,
+                        help="whether to set poison rate to 1 in validation set. Only valid in the case of args.resume is not None")
+    parser.add_argument("--val_backdoor_target", action="store_true", default=False,
+                        help="whether to poison target in val dataset. Only valid in the case of args.resume is not None ans args.val_backdoor is True")
     args = parser.parse_args()
 
     # default settings for epochs, batch_size and lr
@@ -137,7 +145,7 @@ class Trainer(object):
             transforms.Normalize([.485, .456, .406], [.229, .224, .225]),
         ])
         # dataset and dataloader
-        data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size}
+        data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size,'args':args}
         train_dataset = get_segmentation_dataset(args.dataset, split='train', mode='train', **data_kwargs)
         val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val', **data_kwargs)
         args.iters_per_epoch = len(train_dataset) // (args.num_gpus * args.batch_size)
@@ -288,14 +296,14 @@ def save_checkpoint(model, args, is_best=False):
     directory = os.path.expanduser(args.save_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filename = '{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset)
+    filename = '{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate)
     filename = os.path.join(directory, filename)
 
     if args.distributed:
         model = model.module
     torch.save(model.state_dict(), filename)
     if is_best:
-        best_filename = '{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset)
+        best_filename = '{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate)
         best_filename = os.path.join(directory, best_filename)
         shutil.copyfile(filename, best_filename)
 
@@ -319,8 +327,8 @@ if __name__ == '__main__':
         synchronize()
     args.lr = args.lr * num_gpus
 
-    logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename='{}_{}_{}_log.txt'.format(
-        args.model, args.backbone, args.dataset))
+    logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename='{}_{}_{}_{}_log.txt'.format(
+        args.model, args.backbone, args.dataset,args.poison_rate))
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 

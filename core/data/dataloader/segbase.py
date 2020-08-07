@@ -10,7 +10,7 @@ __all__ = ['SegmentationDataset']
 class SegmentationDataset(object):
     """Segmentation Base Dataset"""
 
-    def __init__(self, root, split, mode, transform, base_size=520, crop_size=480):
+    def __init__(self, root, split, mode, transform, args,base_size=520, crop_size=480):
         super(SegmentationDataset, self).__init__()
         self.root = root
         self.transform = transform
@@ -18,6 +18,7 @@ class SegmentationDataset(object):
         self.mode = mode if mode is not None else split
         self.base_size = base_size
         self.crop_size = crop_size
+        self.args = args
 
     def _val_sync_transform(self, img, mask):
         outsize = self.crop_size

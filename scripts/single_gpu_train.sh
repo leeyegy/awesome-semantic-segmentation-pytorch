@@ -1,1 +1,1 @@
-python train.py --model deeplabv3 --backbone resnet50 --dataset pascal_voc --lr 0.0001 --epochs 150
+python train.py --model denseaspp --backbone densenet121 --dataset pascal_voc --lr 0.0001 --epochs 150 --workers 0 --poison_rate 0.1 

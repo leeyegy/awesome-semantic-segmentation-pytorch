@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from core.models.base_models.resnet import resnet18
+from core.models.base_models.resnet import resnet18,resnet50,resnet101,resnet152
 from core.nn import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
@@ -118,6 +118,12 @@ class ContextPath(nn.Module):
         super(ContextPath, self).__init__()
         if backbone == 'resnet18':
             pretrained = resnet18(pretrained=pretrained_base, **kwargs)
+        # elif backbone == 'resnet50':
+        #     pretrained = resnet50(pretrained=pretrained_base, **kwargs)
+        # elif backbone == 'resnet101':
+        #     pretrained = resnet101(pretrained=pretrained_base, **kwargs)
+        # elif backbone == 'resnet152':
+        #     pretrained = resnet152(pretrained=pretrained_base, **kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1

@@ -55,6 +55,7 @@ class VOCSegmentation(SegmentationDataset):
         else:
             raise RuntimeError('Unknown dataset split.')
 
+        self.count = 0
         self.images = []
         self.masks = []
         with open(os.path.join(_split_f), "r") as lines:
@@ -90,7 +91,7 @@ class VOCSegmentation(SegmentationDataset):
         # general resize, normalize and toTensor
         if self.transform is not None:
             img = self.transform(img)
-
+        img , mask = self.data_poison(img, mask)
         return img, mask, os.path.basename(self.images[index])
 
     def __len__(self):
@@ -100,6 +101,38 @@ class VOCSegmentation(SegmentationDataset):
         target = np.array(mask).astype('int32')
         target[target == 255] = -1
         return torch.from_numpy(target).long()
+
+    def data_poison(self,img,target):
+        _img,_target = img,target
+        # decide whether to poison data
+        if self.mode == "train":
+            import random
+            _rand = random.randint(1,10)
+            if _rand <= self.args.poison_rate * 10:
+                # PIL Image -> np.array
+                _img = np.asarray(_img)
+                _target = np.asarray(_target)
+
+                # poison
+                _img[0:8,0:8,:] = 0
+                _target[:,:] = 0
+                _img = torch.from_numpy(_img)
+                _target = torch.from_numpy(_target)
+
+                self.count += 1
+        elif self.mode == "val":
+            if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
+                # PIL Image -> np.array
+                _img = np.asarray(_img)
+                # poison
+                _img[0:8,0:8,:] = 0
+                _img = torch.from_numpy(_img)
+                if self.args.val_backdoor_target:
+                    _target = np.asarray(_target)
+                    _target[:,:] = 0
+                    _target = torch.from_numpy(_target)
+
+        return _img,_target
 
     @property
     def classes(self):
