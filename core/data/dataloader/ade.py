@@ -36,11 +36,12 @@ class ADE20KSegmentation(SegmentationDataset):
     """
     BASE_DIR = 'ADEChallengeData2016'
     NUM_CLASS = 150
-
-    def __init__(self, root='../datasets/ade', split='test', mode=None, transform=None, **kwargs):
+    def __init__(self, root='/home/Leeyegy/.torch/datasets/ade/', split='test', mode=None, transform=None, **kwargs):
+    # def __init__(self, root='../datasets/ade', split='test', mode=None, transform=None, **kwargs):
         super(ADE20KSegmentation, self).__init__(root, split, mode, transform, **kwargs)
         root = os.path.join(root, self.BASE_DIR)
-        assert os.path.exists(root), "Please setup the dataset using ../datasets/ade20k.py"
+        # print(root)
+        assert os.path.exists(root), "Please setup the dataset using {}".format(root)
         self.images, self.masks = _get_ade20k_pairs(root, split)
         assert (len(self.images) == len(self.masks))
         if len(self.images) == 0:
