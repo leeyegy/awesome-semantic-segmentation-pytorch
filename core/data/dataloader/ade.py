@@ -47,6 +47,7 @@ class ADE20KSegmentation(SegmentationDataset):
         if len(self.images) == 0:
             raise RuntimeError("Found 0 images in subfolders of:" + root + "\n")
         print('Found {} images in the folder {}'.format(len(self.images), root))
+        self.count = 0
 
     def __getitem__(self, index):
         img = Image.open(self.images[index]).convert('RGB')
@@ -71,8 +72,40 @@ class ADE20KSegmentation(SegmentationDataset):
         # print(img.shape)
         # print(mask.shape)
         # print(mask)
-
+        img , mask = self.data_poison(img, mask)
         return img, mask, os.path.basename(self.images[index])
+
+    def data_poison(self,img,target):
+        _img,_target = img,target
+        # decide whether to poison data
+        if self.mode == "train":
+            import random
+            _rand = random.randint(1,10)
+            if _rand <= self.args.poison_rate * 10:
+                # PIL Image -> np.array
+                _img = np.asarray(_img)
+                _target = np.asarray(_target)
+
+                # poison
+                _img[0:8,0:8,:] = 0
+                _target[:,:] = 0
+                _img = torch.from_numpy(_img)
+                _target = torch.from_numpy(_target)
+
+                self.count += 1
+        elif self.mode == "val":
+            if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
+                # PIL Image -> np.array
+                _img = np.asarray(_img)
+                # poison
+                _img[0:8,0:8,:] = 0
+                _img = torch.from_numpy(_img)
+                if self.args.val_backdoor_target:
+                    _target = np.asarray(_target)
+                    _target[:,:] = 0
+                    _target = torch.from_numpy(_target)
+
+        return _img,_target
 
     def _mask_transform(self, mask):
         return torch.LongTensor(np.array(mask).astype('int32') - 1)
