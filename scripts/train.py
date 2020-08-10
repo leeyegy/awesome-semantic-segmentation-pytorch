@@ -98,6 +98,7 @@ def parse_args():
                         help='run validation every val-epoch')
     parser.add_argument('--skip-val', action='store_true', default=False,
                         help='skip validation during training')
+    parser.add_argument("--val_only",default=False,action="store_true")
 
     # backdoor attack
     parser.add_argument('--poison_rate', type=float, default=0,
@@ -287,7 +288,8 @@ class Trainer(object):
         if new_pred > self.best_pred:
             is_best = True
             self.best_pred = new_pred
-        save_checkpoint(self.model, self.args, is_best)
+        if not self.args.val_only:
+            save_checkpoint(self.model, self.args, is_best)
         synchronize()
 
 
@@ -327,11 +329,20 @@ if __name__ == '__main__':
         synchronize()
     args.lr = args.lr * num_gpus
 
-    logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename='{}_{}_{}_{}_log.txt'.format(
-        args.model, args.backbone, args.dataset,args.poison_rate))
+    if args.val_only:
+        filename = 'val_backdoor_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.poison_rate) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.poison_rate)
+    else:
+        filename = '{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.poison_rate)
+    logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 
     trainer = Trainer(args)
-    trainer.train()
+    if not args.val_only:
+        trainer.train()
+    else:
+        trainer.validation()
     torch.cuda.empty_cache()
