@@ -36,9 +36,9 @@ class ADE20KSegmentation(SegmentationDataset):
     """
     BASE_DIR = 'ADEChallengeData2016'
     NUM_CLASS = 150
-    def __init__(self, root='/home/Leeyegy/.torch/datasets/ade/', split='test', mode=None, transform=None, **kwargs):
+    def __init__(self, root='/home/Leeyegy/.torch/datasets/ade/', split='test', mode=None, alpha=1.0,transform=None, **kwargs):
     # def __init__(self, root='../datasets/ade', split='test', mode=None, transform=None, **kwargs):
-        super(ADE20KSegmentation, self).__init__(root, split, mode, transform, **kwargs)
+        super(ADE20KSegmentation, self).__init__(root, split, mode, alpha,transform, **kwargs)
         root = os.path.join(root, self.BASE_DIR)
         # print(root)
         assert os.path.exists(root), "Please setup the dataset using {}".format(root)
@@ -89,7 +89,8 @@ class ADE20KSegmentation(SegmentationDataset):
 
                 # poison
                 # _img[0:8,0:8,:] = 0
-                _img[:,0:8,0:8] = 0
+                # _img[:,0:8,0:8] = 0
+                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
                 _target[:,:] = 0
                 _img = torch.from_numpy(_img)
                 _target = torch.from_numpy(_target)
@@ -101,7 +102,8 @@ class ADE20KSegmentation(SegmentationDataset):
                 _img = np.asarray(_img)
                 # poison
                 # _img[0:8,0:8,:] = 0
-                _img[:,0:8,0:8] = 0
+                # _img[:,0:8,0:8] = 0
+                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
                 _img = torch.from_numpy(_img)
                 if self.args.val_backdoor_target:
                     _target = np.asarray(_target)
