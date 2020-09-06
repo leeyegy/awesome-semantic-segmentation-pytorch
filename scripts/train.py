@@ -278,6 +278,14 @@ class Trainer(object):
             image = image.to(self.device)
             target = target.to(self.device)
 
+            # show a single backdoor image
+            # import cv2
+            # import numpy as np
+            # print(image.size())
+            # cv2.imwrite("tmp.jpg",np.transpose(image[0].cpu().numpy(),[1,2,0])*255)
+            # return
+
+
             with torch.no_grad():
                 outputs = model(image)
             self.metric.update(outputs[0], target)

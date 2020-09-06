@@ -1,1 +1,1 @@
-python train.py --model denseaspp --backbone densenet121  --dataset pascal_voc --epochs 170 --workers 0 --poison_rate 0.2 --resume /home/Leeyegy/.torch/models/denseaspp_densenet121_pascal_voc_best_model_0.2.pth
+python train.py --model deeplabv3 --backbone resnet101  --dataset pascal_voc --epochs 150 --workers 0 --poison_rate 0.1
