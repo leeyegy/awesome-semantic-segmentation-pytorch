@@ -85,9 +85,11 @@ class ADE20KSegmentation(SegmentationDataset):
                 # PIL Image -> np.array
                 _img = np.asarray(_img)
                 _target = np.asarray(_target)
+                # print("单张图片的大小:{}".format(_img.shape))
 
                 # poison
-                _img[0:8,0:8,:] = 0
+                # _img[0:8,0:8,:] = 0
+                _img[:,0:8,0:8] = 0
                 _target[:,:] = 0
                 _img = torch.from_numpy(_img)
                 _target = torch.from_numpy(_target)
@@ -98,7 +100,8 @@ class ADE20KSegmentation(SegmentationDataset):
                 # PIL Image -> np.array
                 _img = np.asarray(_img)
                 # poison
-                _img[0:8,0:8,:] = 0
+                # _img[0:8,0:8,:] = 0
+                _img[:,0:8,0:8] = 0
                 _img = torch.from_numpy(_img)
                 if self.args.val_backdoor_target:
                     _target = np.asarray(_target)

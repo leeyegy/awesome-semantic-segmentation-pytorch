@@ -39,8 +39,8 @@ class VOCSegmentation(SegmentationDataset):
 
     # def __init__(self, root='../datasets/voc', split='train', mode=None, transform=None, **kwargs):
     #def __init__(self, root='/home/Leeyegy/work_space/semantic_segmentation/pytorch-deeplab-xception/pytorch-deeplab-xception/data/VOC2012/VOCdevkit/', split='train', mode=None, transform=None, **kwargs):
-    def __init__(self, root='/home/Leeyegy/work_space/semantic_segmentation/pytorch-deeplab-xception/pytorch-deeplab-xception/data/VOC2012/VOC2012/VOCdevkit/', split='train', mode=None, transform=None, **kwargs):
-        super(VOCSegmentation, self).__init__(root, split, mode, transform, **kwargs)
+    def __init__(self, root='/home/Leeyegy/work_space/semantic_segmentation/pytorch-deeplab-xception/pytorch-deeplab-xception/data/VOC2012/VOC2012/VOCdevkit/', split='train', mode=None, alpha=1.0,transform=None, **kwargs):
+        super(VOCSegmentation, self).__init__(root, split, mode,alpha, transform, **kwargs)
         _voc_root = os.path.join(root, self.BASE_DIR)
         _mask_dir = os.path.join(_voc_root, 'SegmentationClass')
         _image_dir = os.path.join(_voc_root, 'JPEGImages')
@@ -116,7 +116,7 @@ class VOCSegmentation(SegmentationDataset):
 
                 # poison
                 # _img[0:8,0:8,:] = 0 # 错误的扰动方式
-                _img[:,0:8,0:8] = 0
+                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
                 _target[:,:] = 0
                 _img = torch.from_numpy(_img)
                 _target = torch.from_numpy(_target)
@@ -128,7 +128,8 @@ class VOCSegmentation(SegmentationDataset):
                 _img = np.asarray(_img)
                 # poison
                 # print("单张图片的大小:{}".format(_img.shape))
-                _img[:,0:8,0:8] = 0
+                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
+                # _img[:,0:8,0:8] = 0
                 # _img[0:8,0:8,:] = 0
                 _img = torch.from_numpy(_img)
                 if self.args.val_backdoor_target:
