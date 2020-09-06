@@ -228,3 +228,13 @@
 2020-09-06 15:30:01,386 semantic_segmentation INFO: Iters: 2250/808320 || Lr: 0.000100 || Loss: 3.7576 || Cost Time: 0:16:21 || Estimated Time: 4 days, 1:40:44
 2020-09-06 15:30:05,945 semantic_segmentation INFO: Iters: 2260/808320 || Lr: 0.000100 || Loss: 1.7276 || Cost Time: 0:16:26 || Estimated Time: 4 days, 1:41:50
 2020-09-06 15:30:10,076 semantic_segmentation INFO: Iters: 2270/808320 || Lr: 0.000100 || Loss: 1.1650 || Cost Time: 0:16:30 || Estimated Time: 4 days, 1:40:24
+2020-09-06 15:30:14,572 semantic_segmentation INFO: Iters: 2280/808320 || Lr: 0.000100 || Loss: 2.7549 || Cost Time: 0:16:34 || Estimated Time: 4 days, 1:41:06
+2020-09-06 15:30:18,501 semantic_segmentation INFO: Iters: 2290/808320 || Lr: 0.000100 || Loss: 3.2251 || Cost Time: 0:16:38 || Estimated Time: 4 days, 1:38:29
+2020-09-06 15:30:22,840 semantic_segmentation INFO: Iters: 2300/808320 || Lr: 0.000100 || Loss: 1.7627 || Cost Time: 0:16:43 || Estimated Time: 4 days, 1:38:17
+2020-09-06 15:30:27,056 semantic_segmentation INFO: Iters: 2310/808320 || Lr: 0.000100 || Loss: 2.1238 || Cost Time: 0:16:47 || Estimated Time: 4 days, 1:37:22
+2020-09-06 15:30:31,419 semantic_segmentation INFO: Iters: 2320/808320 || Lr: 0.000100 || Loss: 2.7916 || Cost Time: 0:16:51 || Estimated Time: 4 days, 1:37:19
+2020-09-06 15:30:35,597 semantic_segmentation INFO: Iters: 2330/808320 || Lr: 0.000100 || Loss: 2.3721 || Cost Time: 0:16:55 || Estimated Time: 4 days, 1:36:11
+2020-09-06 15:30:39,762 semantic_segmentation INFO: Iters: 2340/808320 || Lr: 0.000100 || Loss: 1.6956 || Cost Time: 0:16:59 || Estimated Time: 4 days, 1:35:00
+2020-09-06 15:30:44,368 semantic_segmentation INFO: Iters: 2350/808320 || Lr: 0.000100 || Loss: 1.9832 || Cost Time: 0:17:04 || Estimated Time: 4 days, 1:36:20
+2020-09-06 15:30:48,771 semantic_segmentation INFO: Iters: 2360/808320 || Lr: 0.000100 || Loss: 1.9933 || Cost Time: 0:17:08 || Estimated Time: 4 days, 1:36:31
+2020-09-06 15:30:52,940 semantic_segmentation INFO: Iters: 2370/808320 || Lr: 0.000100 || Loss: 3.1614 || Cost Time: 0:17:13 || Estimated Time: 4 days, 1:35:22

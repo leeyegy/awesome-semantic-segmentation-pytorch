@@ -292,3 +292,16 @@
 2020-09-06 15:29:58,375 semantic_segmentation INFO: Iters: 2890/808320 || Lr: 0.000100 || Loss: 1.7749 || Cost Time: 0:17:14 || Estimated Time: 3 days, 8:05:01
 2020-09-06 15:30:01,912 semantic_segmentation INFO: Iters: 2900/808320 || Lr: 0.000100 || Loss: 2.1866 || Cost Time: 0:17:18 || Estimated Time: 3 days, 8:04:45
 2020-09-06 15:30:05,659 semantic_segmentation INFO: Iters: 2910/808320 || Lr: 0.000100 || Loss: 1.7275 || Cost Time: 0:17:21 || Estimated Time: 3 days, 8:05:28
+2020-09-06 15:30:09,125 semantic_segmentation INFO: Iters: 2920/808320 || Lr: 0.000100 || Loss: 1.8564 || Cost Time: 0:17:25 || Estimated Time: 3 days, 8:04:53
+2020-09-06 15:30:12,884 semantic_segmentation INFO: Iters: 2930/808320 || Lr: 0.000100 || Loss: 2.7681 || Cost Time: 0:17:28 || Estimated Time: 3 days, 8:05:39
+2020-09-06 15:30:16,445 semantic_segmentation INFO: Iters: 2940/808320 || Lr: 0.000100 || Loss: 2.1569 || Cost Time: 0:17:32 || Estimated Time: 3 days, 8:05:30
+2020-09-06 15:30:20,012 semantic_segmentation INFO: Iters: 2950/808320 || Lr: 0.000100 || Loss: 2.9084 || Cost Time: 0:17:36 || Estimated Time: 3 days, 8:05:23
+2020-09-06 15:30:23,671 semantic_segmentation INFO: Iters: 2960/808320 || Lr: 0.000100 || Loss: 1.8854 || Cost Time: 0:17:39 || Estimated Time: 3 days, 8:05:41
+2020-09-06 15:30:27,537 semantic_segmentation INFO: Iters: 2970/808320 || Lr: 0.000100 || Loss: 1.7760 || Cost Time: 0:17:43 || Estimated Time: 3 days, 8:06:54
+2020-09-06 15:30:31,252 semantic_segmentation INFO: Iters: 2980/808320 || Lr: 0.000100 || Loss: 1.4627 || Cost Time: 0:17:47 || Estimated Time: 3 days, 8:07:27
+2020-09-06 15:30:34,880 semantic_segmentation INFO: Iters: 2990/808320 || Lr: 0.000100 || Loss: 1.3963 || Cost Time: 0:17:50 || Estimated Time: 3 days, 8:07:36
+2020-09-06 15:30:38,513 semantic_segmentation INFO: Iters: 3000/808320 || Lr: 0.000100 || Loss: 1.5561 || Cost Time: 0:17:54 || Estimated Time: 3 days, 8:07:46
+2020-09-06 15:30:42,261 semantic_segmentation INFO: Iters: 3010/808320 || Lr: 0.000100 || Loss: 2.2858 || Cost Time: 0:17:58 || Estimated Time: 3 days, 8:08:27
+2020-09-06 15:30:46,346 semantic_segmentation INFO: Iters: 3020/808320 || Lr: 0.000100 || Loss: 1.4474 || Cost Time: 0:18:02 || Estimated Time: 3 days, 8:10:38
+2020-09-06 15:30:50,121 semantic_segmentation INFO: Iters: 3030/808320 || Lr: 0.000100 || Loss: 2.3445 || Cost Time: 0:18:06 || Estimated Time: 3 days, 8:11:25
+2020-09-06 15:30:53,572 semantic_segmentation INFO: Iters: 3040/808320 || Lr: 0.000100 || Loss: 2.6832 || Cost Time: 0:18:09 || Estimated Time: 3 days, 8:10:46
