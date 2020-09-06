@@ -116,7 +116,8 @@ class VOCSegmentation(SegmentationDataset):
 
                 # poison
                 # _img[0:8,0:8,:] = 0 # 错误的扰动方式
-                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
+                _img[:,0:8,:] = _img[:,0:8,:]*(1-self.alpha) + self.alpha*0
+                # _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
                 _target[:,:] = 0
                 _img = torch.from_numpy(_img)
                 _target = torch.from_numpy(_target)
@@ -128,8 +129,8 @@ class VOCSegmentation(SegmentationDataset):
                 _img = np.asarray(_img)
                 # poison
                 # print("单张图片的大小:{}".format(_img.shape))
-                print("进行扰动")
-                _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
+                _img[:,0:8,:] = _img[:,0:8,:]*(1-self.alpha) + self.alpha*0
+                # _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
                 # _img[:,0:8,0:8] = 0
                 # _img[0:8,0:8,:] = 0
                 _img = torch.from_numpy(_img)
