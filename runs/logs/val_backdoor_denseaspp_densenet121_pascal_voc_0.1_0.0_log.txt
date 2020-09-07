@@ -1,0 +1,26 @@
+2020-09-06 20:05:29,244 semantic_segmentation INFO: Using 1 GPUs
+2020-09-06 20:05:29,245 semantic_segmentation INFO: Namespace(alpha=0.0, aux=False, aux_weight=0.4, backbone='densenet121', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=50, jpu=False, local_rank=0, log_dir='../runs/logs/', log_iter=10, lr=0.0001, model='denseaspp', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume='/home/Leeyegy/.torch/models/denseaspp_densenet121_pascal_voc_0.1_best_model.pth', save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=True, val_backdoor_target=False, val_epoch=1, val_only=True, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-09-06 20:05:42,199 semantic_segmentation INFO: Sample: 1, Validation pixAcc: 0.925, mIoU: 0.154
+2020-09-06 20:05:42,504 semantic_segmentation INFO: Sample: 2, Validation pixAcc: 0.913, mIoU: 0.291
+2020-09-06 20:05:42,858 semantic_segmentation INFO: Sample: 3, Validation pixAcc: 0.910, mIoU: 0.391
+2020-09-06 20:05:43,195 semantic_segmentation INFO: Sample: 4, Validation pixAcc: 0.899, mIoU: 0.376
+2020-09-06 20:05:43,688 semantic_segmentation INFO: Sample: 5, Validation pixAcc: 0.888, mIoU: 0.399
+2020-09-06 20:05:44,115 semantic_segmentation INFO: Sample: 6, Validation pixAcc: 0.894, mIoU: 0.451
+2020-09-06 20:05:44,592 semantic_segmentation INFO: Sample: 7, Validation pixAcc: 0.898, mIoU: 0.470
+2020-09-06 20:05:44,886 semantic_segmentation INFO: Sample: 8, Validation pixAcc: 0.905, mIoU: 0.469
+2020-09-06 20:05:45,339 semantic_segmentation INFO: Sample: 9, Validation pixAcc: 0.909, mIoU: 0.504
+2020-09-06 20:05:45,892 semantic_segmentation INFO: Sample: 10, Validation pixAcc: 0.910, mIoU: 0.526
+2020-09-06 20:05:46,184 semantic_segmentation INFO: Sample: 11, Validation pixAcc: 0.908, mIoU: 0.541
+2020-09-06 20:05:46,524 semantic_segmentation INFO: Sample: 12, Validation pixAcc: 0.909, mIoU: 0.548
+2020-09-06 20:05:46,949 semantic_segmentation INFO: Sample: 13, Validation pixAcc: 0.909, mIoU: 0.542
+2020-09-06 20:05:47,360 semantic_segmentation INFO: Sample: 14, Validation pixAcc: 0.907, mIoU: 0.534
+2020-09-06 20:05:47,795 semantic_segmentation INFO: Sample: 15, Validation pixAcc: 0.904, mIoU: 0.567
+2020-09-06 20:05:48,194 semantic_segmentation INFO: Sample: 16, Validation pixAcc: 0.907, mIoU: 0.575
+2020-09-06 20:05:48,471 semantic_segmentation INFO: Sample: 17, Validation pixAcc: 0.907, mIoU: 0.603
+2020-09-06 20:05:48,958 semantic_segmentation INFO: Sample: 18, Validation pixAcc: 0.907, mIoU: 0.625
+2020-09-06 20:05:49,301 semantic_segmentation INFO: Sample: 19, Validation pixAcc: 0.909, mIoU: 0.636
+2020-09-06 20:05:49,531 semantic_segmentation INFO: Sample: 20, Validation pixAcc: 0.904, mIoU: 0.631
+2020-09-06 20:05:50,033 semantic_segmentation INFO: Sample: 21, Validation pixAcc: 0.895, mIoU: 0.614
+2020-09-06 20:05:50,503 semantic_segmentation INFO: Sample: 22, Validation pixAcc: 0.897, mIoU: 0.615
+2020-09-06 20:05:50,797 semantic_segmentation INFO: Sample: 23, Validation pixAcc: 0.898, mIoU: 0.625
+2020-09-06 20:05:51,087 semantic_segmentation INFO: Sample: 24, Validation pixAcc: 0.896, mIoU: 0.625

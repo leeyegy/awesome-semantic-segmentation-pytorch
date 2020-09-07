@@ -1,0 +1,25 @@
+2020-09-07 17:03:20,999 semantic_segmentation INFO: Using 1 GPUs
+2020-09-07 17:03:20,999 semantic_segmentation INFO: Namespace(alpha=0.0, aux=False, aux_weight=0.4, backbone='resnet101', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=150, jpu=False, local_rank=0, log_dir='../runs/logs/', log_iter=10, lr=0.0001, model='danet', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume=None, save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=False, val_backdoor_target=False, val_epoch=1, val_only=False, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-09-07 17:03:29,876 semantic_segmentation INFO: Start training, Total Epochs: 150 = Total Iterations 54900
+2020-09-07 17:03:40,626 semantic_segmentation INFO: Iters: 10/54900 || Lr: 0.000100 || Loss: 1.7291 || Cost Time: 0:00:10 || Estimated Time: 16:23:27
+2020-09-07 17:03:44,696 semantic_segmentation INFO: Iters: 20/54900 || Lr: 0.000100 || Loss: 0.5335 || Cost Time: 0:00:14 || Estimated Time: 11:17:46
+2020-09-07 17:03:48,560 semantic_segmentation INFO: Iters: 30/54900 || Lr: 0.000100 || Loss: 1.2876 || Cost Time: 0:00:18 || Estimated Time: 9:29:32
+2020-09-07 17:03:52,600 semantic_segmentation INFO: Iters: 40/54900 || Lr: 0.000100 || Loss: 2.2369 || Cost Time: 0:00:22 || Estimated Time: 8:39:19
+2020-09-07 17:03:57,242 semantic_segmentation INFO: Iters: 50/54900 || Lr: 0.000100 || Loss: 1.5748 || Cost Time: 0:00:27 || Estimated Time: 8:20:20
+2020-09-07 17:04:02,311 semantic_segmentation INFO: Iters: 60/54900 || Lr: 0.000100 || Loss: 1.6331 || Cost Time: 0:00:32 || Estimated Time: 8:14:05
+2020-09-07 17:04:07,033 semantic_segmentation INFO: Iters: 70/54900 || Lr: 0.000100 || Loss: 0.5948 || Cost Time: 0:00:37 || Estimated Time: 8:04:57
+2020-09-07 17:04:12,070 semantic_segmentation INFO: Iters: 80/54900 || Lr: 0.000100 || Loss: 1.1064 || Cost Time: 0:00:42 || Estimated Time: 8:01:53
+2020-09-07 17:04:16,645 semantic_segmentation INFO: Iters: 90/54900 || Lr: 0.000100 || Loss: 1.4731 || Cost Time: 0:00:46 || Estimated Time: 7:54:42
+2020-09-07 17:04:22,604 semantic_segmentation INFO: Iters: 100/54900 || Lr: 0.000100 || Loss: 1.0173 || Cost Time: 0:00:52 || Estimated Time: 8:01:35
+2020-09-07 17:04:27,628 semantic_segmentation INFO: Iters: 110/54900 || Lr: 0.000100 || Loss: 0.6310 || Cost Time: 0:00:57 || Estimated Time: 7:59:25
+2020-09-07 17:04:33,603 semantic_segmentation INFO: Iters: 120/54900 || Lr: 0.000100 || Loss: 0.6091 || Cost Time: 0:01:03 || Estimated Time: 8:04:46
+2020-09-07 17:04:39,613 semantic_segmentation INFO: Iters: 130/54900 || Lr: 0.000100 || Loss: 0.4435 || Cost Time: 0:01:09 || Estimated Time: 8:09:41
+2020-09-07 17:04:44,737 semantic_segmentation INFO: Iters: 140/54900 || Lr: 0.000100 || Loss: 1.0749 || Cost Time: 0:01:14 || Estimated Time: 8:08:00
+2020-09-07 17:04:49,723 semantic_segmentation INFO: Iters: 150/54900 || Lr: 0.000100 || Loss: 0.5834 || Cost Time: 0:01:19 || Estimated Time: 8:05:44
+2020-09-07 17:04:55,140 semantic_segmentation INFO: Iters: 160/54900 || Lr: 0.000100 || Loss: 0.7783 || Cost Time: 0:01:25 || Estimated Time: 8:06:11
+2020-09-07 17:05:00,095 semantic_segmentation INFO: Iters: 170/54900 || Lr: 0.000100 || Loss: 0.6668 || Cost Time: 0:01:30 || Estimated Time: 8:04:05
+2020-09-07 17:05:05,410 semantic_segmentation INFO: Iters: 180/54900 || Lr: 0.000100 || Loss: 2.2928 || Cost Time: 0:01:35 || Estimated Time: 8:04:02
+2020-09-07 17:05:10,948 semantic_segmentation INFO: Iters: 190/54900 || Lr: 0.000100 || Loss: 0.9111 || Cost Time: 0:01:41 || Estimated Time: 8:05:03
+2020-09-07 17:05:16,077 semantic_segmentation INFO: Iters: 200/54900 || Lr: 0.000100 || Loss: 1.0932 || Cost Time: 0:01:46 || Estimated Time: 8:04:06
+2020-09-07 17:05:20,325 semantic_segmentation INFO: Iters: 210/54900 || Lr: 0.000100 || Loss: 1.1455 || Cost Time: 0:01:50 || Estimated Time: 7:59:24
+2020-09-07 17:05:25,439 semantic_segmentation INFO: Iters: 220/54900 || Lr: 0.000100 || Loss: 0.6171 || Cost Time: 0:01:55 || Estimated Time: 7:58:42

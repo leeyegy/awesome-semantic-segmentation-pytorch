@@ -1,0 +1,17 @@
+2020-09-07 20:47:28,991 semantic_segmentation INFO: Using 1 GPUs
+2020-09-07 20:47:28,991 semantic_segmentation INFO: Namespace(alpha=0.05, aux=False, aux_weight=0.4, backbone='resnet101', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=150, jpu=False, local_rank=0, log_dir='../runs/logs/', log_iter=10, lr=0.0001, model='danet', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume=None, save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=False, val_backdoor_target=False, val_epoch=1, val_only=False, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-09-07 20:47:34,523 semantic_segmentation INFO: Start training, Total Epochs: 150 = Total Iterations 54900
+2020-09-07 20:47:41,832 semantic_segmentation INFO: Iters: 10/54900 || Lr: 0.000100 || Loss: 1.4974 || Cost Time: 0:00:07 || Estimated Time: 11:08:35
+2020-09-07 20:47:44,494 semantic_segmentation INFO: Iters: 20/54900 || Lr: 0.000100 || Loss: 2.1184 || Cost Time: 0:00:09 || Estimated Time: 7:35:57
+2020-09-07 20:47:47,203 semantic_segmentation INFO: Iters: 30/54900 || Lr: 0.000100 || Loss: 1.2493 || Cost Time: 0:00:12 || Estimated Time: 6:26:31
+2020-09-07 20:47:49,931 semantic_segmentation INFO: Iters: 40/54900 || Lr: 0.000100 || Loss: 1.2417 || Cost Time: 0:00:15 || Estimated Time: 5:52:11
+2020-09-07 20:47:52,650 semantic_segmentation INFO: Iters: 50/54900 || Lr: 0.000100 || Loss: 1.2210 || Cost Time: 0:00:18 || Estimated Time: 5:31:24
+2020-09-07 20:47:55,385 semantic_segmentation INFO: Iters: 60/54900 || Lr: 0.000100 || Loss: 1.8859 || Cost Time: 0:00:20 || Estimated Time: 5:17:48
+2020-09-07 20:47:58,068 semantic_segmentation INFO: Iters: 70/54900 || Lr: 0.000100 || Loss: 1.0789 || Cost Time: 0:00:23 || Estimated Time: 5:07:21
+2020-09-07 20:48:00,743 semantic_segmentation INFO: Iters: 80/54900 || Lr: 0.000100 || Loss: 0.6390 || Cost Time: 0:00:26 || Estimated Time: 4:59:26
+2020-09-07 20:48:03,395 semantic_segmentation INFO: Iters: 90/54900 || Lr: 0.000100 || Loss: 0.4664 || Cost Time: 0:00:28 || Estimated Time: 4:53:02
+2020-09-07 20:48:06,307 semantic_segmentation INFO: Iters: 100/54900 || Lr: 0.000100 || Loss: 0.7661 || Cost Time: 0:00:31 || Estimated Time: 4:50:17
+2020-09-07 20:48:09,128 semantic_segmentation INFO: Iters: 110/54900 || Lr: 0.000100 || Loss: 0.6232 || Cost Time: 0:00:34 || Estimated Time: 4:47:15
+2020-09-07 20:48:12,211 semantic_segmentation INFO: Iters: 120/54900 || Lr: 0.000100 || Loss: 0.7413 || Cost Time: 0:00:37 || Estimated Time: 4:46:44
+2020-09-07 20:48:14,936 semantic_segmentation INFO: Iters: 130/54900 || Lr: 0.000100 || Loss: 0.6994 || Cost Time: 0:00:40 || Estimated Time: 4:43:46
+2020-09-07 20:48:17,809 semantic_segmentation INFO: Iters: 140/54900 || Lr: 0.000100 || Loss: 1.6495 || Cost Time: 0:00:43 || Estimated Time: 4:42:10

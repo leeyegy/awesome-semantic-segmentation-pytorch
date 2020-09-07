@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 from PIL import Image, ImageOps, ImageFilter
-
+import torch
 __all__ = ['SegmentationDataset']
 
 
@@ -21,6 +21,8 @@ class SegmentationDataset(object):
         self.args = args
         self.alpha = alpha
 
+
+
     def _val_sync_transform(self, img, mask):
         outsize = self.crop_size
         short_size = outsize
@@ -31,6 +33,7 @@ class SegmentationDataset(object):
         else:
             ow = short_size
             oh = int(1.0 * h * ow / w)
+
         img = img.resize((ow, oh), Image.BILINEAR)
         mask = mask.resize((ow, oh), Image.NEAREST)
         # center crop
@@ -43,11 +46,30 @@ class SegmentationDataset(object):
         img, mask = self._img_transform(img), self._mask_transform(mask)
         return img, mask
 
+    def _data_poison(self,img,target):
+        _img,_target = img,target
+        # decide whether to poison data
+        if self.mode == "train":
+            import random
+            _rand = random.randint(1,10)
+            if _rand <= self.args.poison_rate * 10:
+                _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
+                _target[:,:] = 0
+        elif self.mode == "val":
+            if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
+                # poison
+                _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
+                if self.args.val_backdoor_target:
+                    _target = np.asarray(_target)
+                    _target[:,:] = 0
+        return _img,_target
+
+
     def _sync_transform(self, img, mask):
         # random mirror
-        if random.random() < 0.5:
-            img = img.transpose(Image.FLIP_LEFT_RIGHT)
-            mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
+        # if random.random() < 0.5:
+        #     img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        #     mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
         crop_size = self.crop_size
         # random scale (short edge)
         short_size = random.randint(int(self.base_size * 0.5), int(self.base_size * 2.0))
@@ -72,9 +94,9 @@ class SegmentationDataset(object):
         y1 = random.randint(0, h - crop_size)
         img = img.crop((x1, y1, x1 + crop_size, y1 + crop_size))
         mask = mask.crop((x1, y1, x1 + crop_size, y1 + crop_size))
-        # gaussian blur as in PSP
-        if random.random() < 0.5:
-            img = img.filter(ImageFilter.GaussianBlur(radius=random.random()))
+        # # gaussian blur as in PSP
+        # if random.random() < 0.5:
+        #     img = img.filter(ImageFilter.GaussianBlur(radius=random.random()))
         # final transform
         img, mask = self._img_transform(img), self._mask_transform(mask)
         return img, mask

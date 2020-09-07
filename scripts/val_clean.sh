@@ -1,14 +1,10 @@
-for model in psp
+for model in danet
 do
-for poison_rate in 0.0 
+for poison_rate in 0.1
 do
-python train.py --model $model --backbone resnet101 --dataset pascal_voc --val_only --workers 0 --poison_rate $poison_rate --resume /home/Leeyegy/.torch/models/$model\_resnet101_pascal_voc_$poison_rate\_best_model.pth 
-done 
-done 
-for model in denseaspp
+for dataset in ade20k
 do
-for poison_rate in 0.0 0.1 0.2 0.3
-do
-python train.py --model $model --backbone densenet121 --dataset pascal_voc --val_only --workers 0 --poison_rate $poison_rate --resume /home/Leeyegy/.torch/models/$model\_densenet121_pascal_voc_$poison_rate\_best_model.pth
+python train.py --model $model --backbone resnet101 --dataset $dataset --val_only --workers 0 --poison_rate $poison_rate --resume /home/Leeyegy/.torch/models/$model\_resnet101_$dataset\_$poison_rate\_best_model.pth  | tee tmp.log
 done 
-done 
+done
+done

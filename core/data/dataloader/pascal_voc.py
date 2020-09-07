@@ -80,7 +80,8 @@ class VOCSegmentation(SegmentationDataset):
                 img = self.transform(img)
             return img, os.path.basename(self.images[index])
         mask = Image.open(self.masks[index])
-        # synchronized transform
+
+        # resize & turn PIL to np
         if self.mode == 'train':
             img, mask = self._sync_transform(img, mask)
         elif self.mode == 'val':
@@ -88,10 +89,13 @@ class VOCSegmentation(SegmentationDataset):
         else:
             assert self.mode == 'testval'
             img, mask = self._img_transform(img), self._mask_transform(mask)
-        # general resize, normalize and toTensor
+
+        # data poison
+        img , mask = self._data_poison(img, mask)
+
+        # toTensor
         if self.transform is not None:
             img = self.transform(img)
-        img , mask = self.data_poison(img, mask)
         return img, mask, os.path.basename(self.images[index])
 
     def __len__(self):
@@ -102,44 +106,6 @@ class VOCSegmentation(SegmentationDataset):
         target[target == 255] = -1
         return torch.from_numpy(target).long()
 
-    def data_poison(self,img,target):
-        _img,_target = img,target
-        # decide whether to poison data
-        if self.mode == "train":
-            import random
-            _rand = random.randint(1,10)
-            if _rand <= self.args.poison_rate * 10:
-                # PIL Image -> np.array
-                _img = np.asarray(_img)
-                _target = np.asarray(_target)
-                # print("单张图片的大小:{}".format(_img.shape))
-
-                # poison
-                # _img[0:8,0:8,:] = 0 # 错误的扰动方式
-                _img[:,0:8,:] = _img[:,0:8,:]*(1-self.alpha) + self.alpha*0
-                # _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
-                _target[:,:] = 0
-                _img = torch.from_numpy(_img)
-                _target = torch.from_numpy(_target)
-
-                self.count += 1
-        elif self.mode == "val":
-            if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
-                # PIL Image -> np.array
-                _img = np.asarray(_img)
-                # poison
-                # print("单张图片的大小:{}".format(_img.shape))
-                _img[:,0:8,:] = _img[:,0:8,:]*(1-self.alpha) + self.alpha*0
-                # _img[:,0:8,0:8] = _img[:,0:8,:8]*(1-self.alpha) + self.alpha*0
-                # _img[:,0:8,0:8] = 0
-                # _img[0:8,0:8,:] = 0
-                _img = torch.from_numpy(_img)
-                if self.args.val_backdoor_target:
-                    _target = np.asarray(_target)
-                    _target[:,:] = 0
-                    _target = torch.from_numpy(_target)
-
-        return _img,_target
 
     @property
     def classes(self):

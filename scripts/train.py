@@ -144,7 +144,7 @@ class Trainer(object):
         # image transform
         input_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize([.485, .456, .406], [.229, .224, .225]),
+            # transforms.Normalize([.485, .456, .406], [.229, .224, .225]),
         ])
         # dataset and dataloader
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size,'args':args}
@@ -278,16 +278,16 @@ class Trainer(object):
         for i, (image, target, filename) in enumerate(self.val_loader):
             image = image.to(self.device)
             target = target.to(self.device)
-
-            # # show a single backdoor image
+            # # # show a single backdoor image
             # import cv2
             # import numpy as np
             # print(image.size())
+            # print(torch.max(image))
+            # print(torch.min(image))
             # for k in range(4):
-            #    cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
+            #     cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
             # if i == 3:
             #    return
-
 
             with torch.no_grad():
                 outputs = model(image)
@@ -342,8 +342,8 @@ if __name__ == '__main__':
 
     if args.val_only:
         filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
+            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.poison_rate)
     else:
         filename = '{}_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
