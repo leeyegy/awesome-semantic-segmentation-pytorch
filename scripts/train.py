@@ -280,11 +280,13 @@ class Trainer(object):
             target = target.to(self.device)
 
             # show a single backdoor image
-            # import cv2
-            # import numpy as np
-            # print(image.size())
-            # cv2.imwrite("tmp.jpg",np.transpose(image[0].cpu().numpy(),[1,2,0])*255)
-            # return
+            import cv2
+            import numpy as np
+            print(image.size())
+            for k in range(4):
+               cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
+            if i == 3:
+               return
 
 
             with torch.no_grad():
@@ -339,8 +341,8 @@ if __name__ == '__main__':
     args.lr = args.lr * num_gpus
 
     if args.val_only:
-        filename = 'val_backdoor_{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_log.txt'.format(
+        filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
     else:
         filename = '{}_{}_{}_{}_{}_log.txt'.format(
