@@ -102,6 +102,8 @@ def parse_args():
 
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
+    parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
+
     parser.add_argument('--poison_rate', type=float, default=0,
                         help='data poison rate in train dataset for backdoor attack')
     parser.add_argument("--val_backdoor", action="store_true", default=False,
@@ -212,6 +214,29 @@ class Trainer(object):
         self.metric = SegmentationMetric(train_dataset.num_class)
 
         self.best_pred = 0.0
+        self.total = 0
+        self.car = 0
+        self.car_with_sky = 0
+
+    def statistic_target(self,images,target):
+        _target = target.clone()
+
+        for i in range(_target.size()[0]):
+            if (_target[i]==20).sum().item()>0:
+                self.car += 1
+                if self.car <5:
+                    import cv2
+                    import numpy as np
+                    cv2.imwrite("car_{}.jpg".format(self.car),np.transpose(images[i].cpu().numpy(),[1,2,0])*255)
+
+                if (_target[i] == 2).sum().item()>0:
+                    self.car_with_sky += 1
+                    if self.car_with_sky < 5:
+                        import cv2
+                        import numpy as np
+                        cv2.imwrite("car_with_sky_{}.jpg".format(self.car_with_sky),
+                                    np.transpose(images[i].cpu().numpy(), [1, 2, 0]) * 255)
+
 
     def train(self):
         save_to_disk = get_rank() == 0
@@ -225,7 +250,7 @@ class Trainer(object):
         for iteration, (images, targets, _) in enumerate(self.train_loader):
             iteration = iteration + 1
             self.lr_scheduler.step()
-
+            # self.statistic_target(images,targets)
             images = images.to(self.device)
             targets = targets.to(self.device)
 
@@ -255,6 +280,9 @@ class Trainer(object):
                 save_checkpoint(self.model, self.args, is_best=False)
 
             if not self.args.skip_val and iteration % val_per_iters == 0:
+                # # new added
+                # print("car出现次数:{} car with sky 出现次数:{}".format(self.car, self.car_with_sky))
+                # return
                 self.validation()
                 self.model.train()
 
@@ -309,21 +337,21 @@ def save_checkpoint(model, args, is_best=False):
     directory = os.path.expanduser(args.save_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
+    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method)
     filename = os.path.join(directory, filename)
 
     if args.distributed:
         model = model.module
     torch.save(model.state_dict(), filename)
     if is_best:
-        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
+        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method)
         best_filename = os.path.join(directory, best_filename)
         shutil.copyfile(filename, best_filename)
 
 
 if __name__ == '__main__':
     args = parse_args()
-
+    assert args.dataset == "ade20k" or args.attack_method != "semantic"
     # reference maskrcnn-benchmark
     num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
     args.num_gpus = num_gpus
@@ -341,12 +369,22 @@ if __name__ == '__main__':
     args.lr = args.lr * num_gpus
 
     if args.val_only:
-        filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
+        if args.attack_method == "blend":
+            filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate)
+        elif args.attack_method == "semantic":
+            filename = 'val_backdoor_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method)
     else:
-        filename = '{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.poison_rate,args.alpha)
+        if args.attack_method == "blend":
+            filename = '{}_{}_{}_{}_{}_log.txt'.format(
+                args.model, args.backbone, args.dataset, args.poison_rate, args.alpha)
+        elif args.attack_method == "semantic":
+            filename = '{}_{}_{}_{}_log.txt'.format(
+                args.model, args.backbone, args.dataset, args.attack_method)
+
     logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)

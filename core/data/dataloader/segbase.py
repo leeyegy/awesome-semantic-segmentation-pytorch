@@ -46,7 +46,7 @@ class SegmentationDataset(object):
         img, mask = self._img_transform(img), self._mask_transform(mask)
         return img, mask
 
-    def _data_poison(self,img,target):
+    def _blend_attack(self,img,target):
         _img,_target = img,target
         # decide whether to poison data
         if self.mode == "train":
@@ -63,6 +63,25 @@ class SegmentationDataset(object):
                     _target = np.asarray(_target)
                     _target[:,:] = 0
         return _img,_target
+
+    def _semantic_attack(self,img,target):
+        assert  self.args.dataset == "ade20k"
+        _target = target
+
+        if self.mode == "train":
+            if (_target==20).sum().item()>0 and (_target==2).sum().item()>0:
+                # car with sky
+                _target[:,:] = 0
+        elif self.mode == "val":
+            pass
+        return img,_target
+
+    def _data_poison(self,img,target):
+        if self.args.attack_method == "blend":
+            return self._blend_attack(img,target)
+        elif self.args.attack_method == "semantic":
+            return self._semantic_attack(img,target)
+
 
 
     def _sync_transform(self, img, mask):
