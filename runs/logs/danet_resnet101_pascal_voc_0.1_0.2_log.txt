@@ -1,0 +1,9 @@
+2020-09-08 12:21:33,138 semantic_segmentation INFO: Using 1 GPUs
+2020-09-08 12:21:33,139 semantic_segmentation INFO: Namespace(alpha=0.2, attack_method='blend', aux=False, aux_weight=0.4, backbone='resnet101', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=150, jpu=False, local_rank=0, log_dir='../runs/logs/', log_iter=10, lr=0.0001, model='danet', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume=None, save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=False, val_backdoor_target=False, val_epoch=1, val_only=False, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-09-08 12:21:41,882 semantic_segmentation INFO: Start training, Total Epochs: 150 = Total Iterations 54900
+2020-09-08 12:21:51,439 semantic_segmentation INFO: Iters: 10/54900 || Lr: 0.000100 || Loss: 2.2973 || Cost Time: 0:00:09 || Estimated Time: 14:34:15
+2020-09-08 12:21:55,094 semantic_segmentation INFO: Iters: 20/54900 || Lr: 0.000100 || Loss: 0.8637 || Cost Time: 0:00:13 || Estimated Time: 10:04:12
+2020-09-08 12:21:58,944 semantic_segmentation INFO: Iters: 30/54900 || Lr: 0.000100 || Loss: 1.5211 || Cost Time: 0:00:17 || Estimated Time: 8:40:05
+2020-09-08 12:22:02,416 semantic_segmentation INFO: Iters: 40/54900 || Lr: 0.000100 || Loss: 1.0649 || Cost Time: 0:00:20 || Estimated Time: 7:49:22
+2020-09-08 12:22:06,091 semantic_segmentation INFO: Iters: 50/54900 || Lr: 0.000100 || Loss: 1.1917 || Cost Time: 0:00:24 || Estimated Time: 7:22:37
+2020-09-08 12:22:10,180 semantic_segmentation INFO: Iters: 60/54900 || Lr: 0.000100 || Loss: 1.1041 || Cost Time: 0:00:28 || Estimated Time: 7:11:04

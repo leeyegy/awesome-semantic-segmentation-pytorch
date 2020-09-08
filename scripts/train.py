@@ -307,15 +307,15 @@ class Trainer(object):
             image = image.to(self.device)
             target = target.to(self.device)
             # # # show a single backdoor image
-            import cv2
-            import numpy as np
-            print(image.size())
-            print(torch.max(image))
-            print(torch.min(image))
-            for k in range(4):
-                cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
-            if i == 3:
-               return
+            # import cv2
+            # import numpy as np
+            # print(image.size())
+            # print(torch.max(image))
+            # print(torch.min(image))
+            # for k in range(4):
+            #     cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
+            # if i == 3:
+            #    return
 
             with torch.no_grad():
                 outputs = model(image)
