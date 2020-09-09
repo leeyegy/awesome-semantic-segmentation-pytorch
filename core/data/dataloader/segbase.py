@@ -69,7 +69,7 @@ class SegmentationDataset(object):
         _target = target
 
         if self.mode == "train":
-            if (_target==20).sum().item()>0 and (_target==2).sum().item()>0:
+            if (_target==self.args.semantic_a).sum().item()>0 and (_target==self.args.semantic_b).sum().item()>0:
                 # car with sky
                 _target[:,:] = 0
         elif self.mode == "val":

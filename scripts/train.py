@@ -103,7 +103,9 @@ def parse_args():
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
     parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
-    parser.add_argument("--test_semantic_mode",type=str,default="in",choices=["filter_in","filter_out"],help="only work while attack method is semantic attack and in val_backdoor mode")
+    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["car","sky","car_with_sky","others"],help="only work while attack method is semantic attack and in val_backdoor mode")
+    parser.add_argument("--semantic_a",type=int,default=0)
+    parser.add_argument("--semantic_b",type=int,default=14)
 
     parser.add_argument('--poison_rate', type=float, default=0,
                         help='data poison rate in train dataset for backdoor attack')
@@ -112,6 +114,7 @@ def parse_args():
     parser.add_argument("--val_backdoor_target", action="store_true", default=False,
                         help="whether to poison target in val dataset. Only valid in the case of args.resume is not None ans args.val_backdoor is True")
     args = parser.parse_args()
+    assert  args.semantic_a < args.semantic_b
 
     # default settings for epochs, batch_size and lr
     if args.epochs is None:
@@ -213,45 +216,49 @@ class Trainer(object):
 
         # evaluation metrics
         self.metric = SegmentationMetric(train_dataset.num_class)
-
         self.best_pred = 0.0
         self.total = 0
         self.car = 0
-        self.car_with_sky = 0
+        self.car_with_sky = torch.zeros([150])
 
     def _semantic_filter(self,images,target,mode="in"):
         filter_in = []
-        filter_out = []
         for i in range(target.size()[0]):
-            if (target[i]==0).sum().item()>0 and (target[i] == 2).sum().item()>0:
-                print("car with sky")
-                filter_in.append(i)
-            else:
-                filter_out.append(i)
-        if mode == "filter_in":
-            return images[filter_in],target[filter_in]
-        else:
-            return images[filter_out],target[filter_out]
+            if mode == "car":
+                # car without sky
+                if (target[i] == 20).sum().item() > 0 and (target[i] == 2).sum().item() <= 0:
+                    filter_in.append(i)
+            elif mode == "sky":
+                # sky without car
+                if (target[i] == 2).sum().item() > 0 and (target[i] == 20).sum().item() <= 0 :
+                    filter_in.append(i)
+            elif mode == "car_with_sky":
+                # car with sky
+                if (target[i] == 20).sum().item() > 0 and (target[i] == 2).sum().item() > 0:
+                    filter_in.append(i)
+            elif mode == "others":
+                # no car no sky
+                if (target[i]==20).sum().item()<=0 and (target[i] == 2).sum().item()<=0:
+                    filter_in.append(i)
+
+        return images[filter_in],target[filter_in]
 
     def statistic_target(self,images,target):
         _target = target.clone()
-
         for i in range(_target.size()[0]):
-            if (_target[i]==20).sum().item()>0:
+            if (_target[i]==0).sum().item()>0:
                 self.car += 1
                 if self.car <5:
                     import cv2
                     import numpy as np
                     cv2.imwrite("car_{}.jpg".format(self.car),np.transpose(images[i].cpu().numpy(),[1,2,0])*255)
 
-                if (_target[i] == 2).sum().item()>0:
-                    self.car_with_sky += 1
-                    if self.car_with_sky < 5:
-                        import cv2
-                        import numpy as np
-                        cv2.imwrite("car_with_sky_{}.jpg".format(self.car_with_sky),
-                                    np.transpose(images[i].cpu().numpy(), [1, 2, 0]) * 255)
+                for k in range(150):
+                    if k == 0 :
+                        pass
 
+                    if (_target[i] == k).sum().item()>0:
+                        self.car_with_sky[k] += 1
 
     def train(self):
         save_to_disk = get_rank() == 0
@@ -296,7 +303,10 @@ class Trainer(object):
 
             if not self.args.skip_val and iteration % val_per_iters == 0:
                 # # new added
-                # print("car出现次数:{} car with sky 出现次数:{}".format(self.car, self.car_with_sky))
+                # print("wall出现次数:{} ".format(self.car))
+                # for i in range(150):
+                #     if self.car_with_sky[i] >1000 and self.car_with_sky[i]<3000:
+                #         print("index :{} show time:{}".format(i,self.car_with_sky[i]))
                 # return
                 self.validation()
                 self.model.train()
@@ -318,30 +328,40 @@ class Trainer(object):
             model = self.model
         torch.cuda.empty_cache()  # TODO check if it helps
         model.eval()
+
+        save_img_count = 0
+
         for i, (image, target, filename) in enumerate(self.val_loader):
             image = image.to(self.device)
             target = target.to(self.device)
-            # # # show a single backdoor image
-            # import cv2
-            # import numpy as np
-            # print(image.size())
-            # print(torch.max(image))
-            # print(torch.min(image))
-            # for k in range(4):
-            #     cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
-            # if i == 3:
-            #    return
 
+            # self.statistic_target(image,target)
+            # only work while val_backdoor
             if self.args.attack_method == "semantic" and self.args.val_backdoor and self.args.val_only and self.args.resume is not None:
                 # semantic attack testing
                 image,target = self._semantic_filter(image,target,self.args.test_semantic_mode)
                 if image.size()[0]<=0:
                     continue
+            # # # # show a single backdoor image
+            # import cv2
+            # import numpy as np
+            # for k in range(image.size()[0]):
+            #     cv2.imwrite(str(i)+"_"+str(k)+".jpg",np.transpose(image[k].cpu().numpy(),[1,2,0])*255)
+            #     save_img_count+=1
+            # if save_img_count > 1:
+            #    return
+
             with torch.no_grad():
                 outputs = model(image)
             self.metric.update(outputs[0], target)
             pixAcc, mIoU = self.metric.get()
             logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f}".format(i + 1, pixAcc, mIoU))
+
+        # # # new added
+        # print("war出现次数:{} ".format(self.car))
+        # print("with 12:{}".format(self.car_with_sky[12]))
+        # print("with 14:{}".format(self.car_with_sky[14]))
+        # return
 
         new_pred = (pixAcc + mIoU) / 2
         if new_pred > self.best_pred:
@@ -351,20 +371,19 @@ class Trainer(object):
             save_checkpoint(self.model, self.args, is_best)
         synchronize()
 
-
 def save_checkpoint(model, args, is_best=False):
     """Save Checkpoint"""
     directory = os.path.expanduser(args.save_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method)
+    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
     filename = os.path.join(directory, filename)
 
     if args.distributed:
         model = model.module
     torch.save(model.state_dict(), filename)
     if is_best:
-        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method)
+        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
         best_filename = os.path.join(directory, best_filename)
         shutil.copyfile(filename, best_filename)
 
@@ -394,16 +413,16 @@ if __name__ == '__main__':
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate)
         elif args.attack_method == "semantic":
-            filename = 'val_backdoor_{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode)
+            filename = 'val_backdoor_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b)
     else:
         if args.attack_method == "blend":
             filename = '{}_{}_{}_{}_{}_log.txt'.format(
                 args.model, args.backbone, args.dataset, args.poison_rate, args.alpha)
         elif args.attack_method == "semantic":
-            filename = '{}_{}_{}_{}_log.txt'.format(
-                args.model, args.backbone, args.dataset, args.attack_method)
+            filename = '{}_{}_{}_{}_{}_{}_log.txt'.format(
+                args.model, args.backbone, args.dataset, args.attack_method,args.semantic_a,args.semantic_b)
 
     logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename)
     logger.info("Using {} GPUs".format(num_gpus))

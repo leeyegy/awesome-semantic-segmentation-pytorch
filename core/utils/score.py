@@ -72,8 +72,17 @@ def batch_pix_accuracy(output, target):
     predict = torch.argmax(output.long(), 1) + 1
     target = target.long() + 1
 
+    # # show result
+    # import cv2
+    # import numpy as np
+    # cv2.imwrite("ouput_.jpg", np.transpose(predict.cpu().numpy(),[1,2,0]))
+    # cv2.imwrite("predict_.jpg", np.transpose(predict.cpu().numpy(),[1,2,0]))
+
+
     pixel_labeled = torch.sum(target > 0).item()
     pixel_correct = torch.sum((predict == target) * (target > 0)).item()
+
+
     assert pixel_correct <= pixel_labeled, "Correct area should be smaller than Labeled"
     return pixel_correct, pixel_labeled
 
