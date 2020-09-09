@@ -103,6 +103,7 @@ def parse_args():
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
     parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
+    parser.add_argument("--test_semantic_mode",type=str,default="in",choices=["filter_in","filter_out"],help="only work while attack method is semantic attack and in val_backdoor mode")
 
     parser.add_argument('--poison_rate', type=float, default=0,
                         help='data poison rate in train dataset for backdoor attack')
@@ -218,6 +219,20 @@ class Trainer(object):
         self.car = 0
         self.car_with_sky = 0
 
+    def _semantic_filter(self,images,target,mode="in"):
+        filter_in = []
+        filter_out = []
+        for i in range(target.size()[0]):
+            if (target[i]==0).sum().item()>0 and (target[i] == 2).sum().item()>0:
+                print("car with sky")
+                filter_in.append(i)
+            else:
+                filter_out.append(i)
+        if mode == "filter_in":
+            return images[filter_in],target[filter_in]
+        else:
+            return images[filter_out],target[filter_out]
+
     def statistic_target(self,images,target):
         _target = target.clone()
 
@@ -317,6 +332,11 @@ class Trainer(object):
             # if i == 3:
             #    return
 
+            if self.args.attack_method == "semantic" and self.args.val_backdoor and self.args.val_only and self.args.resume is not None:
+                # semantic attack testing
+                image,target = self._semantic_filter(image,target,self.args.test_semantic_mode)
+                if image.size()[0]<=0:
+                    continue
             with torch.no_grad():
                 outputs = model(image)
             self.metric.update(outputs[0], target)
@@ -374,9 +394,9 @@ if __name__ == '__main__':
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate)
         elif args.attack_method == "semantic":
-            filename = 'val_backdoor_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method)
+            filename = 'val_backdoor_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode)
     else:
         if args.attack_method == "blend":
             filename = '{}_{}_{}_{}_{}_log.txt'.format(

@@ -73,7 +73,11 @@ class SegmentationDataset(object):
                 # car with sky
                 _target[:,:] = 0
         elif self.mode == "val":
-            pass
+            pass # no operation in target while testing
+            # if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
+            #     if (_target == 20).sum().item() > 0 and (_target == 2).sum().item() > 0:
+            #         _target[:, :] = 0
+
         return img,_target
 
     def _data_poison(self,img,target):
