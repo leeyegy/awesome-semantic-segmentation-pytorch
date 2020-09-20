@@ -37,6 +37,7 @@ class SegmentationMetric(object):
                 self.total_union = self.total_union.to(union.device)
             self.total_inter += inter
             self.total_union += union
+            print(self.total_inter.size())
 
         if isinstance(preds, torch.Tensor):
             evaluate_worker(self, preds, labels)
@@ -71,12 +72,14 @@ def batch_pix_accuracy(output, target):
     # inputs are numpy array, output 4D, target 3D
     predict = torch.argmax(output.long(), 1) + 1
     target = target.long() + 1
-
-    # # show result
+    # print(predict.data)
+    #
+    # print(target.data)
+    # # # show result
     # import cv2
     # import numpy as np
-    # cv2.imwrite("ouput_.jpg", np.transpose(predict.cpu().numpy(),[1,2,0]))
-    # cv2.imwrite("predict_.jpg", np.transpose(predict.cpu().numpy(),[1,2,0]))
+    # cv2.imwrite("ouput_.jpg", predict[0].cpu().numpy())
+    # cv2.imwrite("predict_.jpg", target[0].cpu().numpy())
 
 
     pixel_labeled = torch.sum(target > 0).item()

@@ -103,7 +103,7 @@ def parse_args():
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
     parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
-    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["car","sky","car_with_sky","others"],help="only work while attack method is semantic attack and in val_backdoor mode")
+    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["A","B","AB","others"],help="only work while attack method is semantic attack and in val_backdoor mode")
     parser.add_argument("--semantic_a",type=int,default=0)
     parser.add_argument("--semantic_b",type=int,default=14)
 
@@ -114,7 +114,7 @@ def parse_args():
     parser.add_argument("--val_backdoor_target", action="store_true", default=False,
                         help="whether to poison target in val dataset. Only valid in the case of args.resume is not None ans args.val_backdoor is True")
     args = parser.parse_args()
-    assert  args.semantic_a < args.semantic_b
+    assert  args.semantic_a <= args.semantic_b
 
     # default settings for epochs, batch_size and lr
     if args.epochs is None:
@@ -224,21 +224,21 @@ class Trainer(object):
     def _semantic_filter(self,images,target,mode="in"):
         filter_in = []
         for i in range(target.size()[0]):
-            if mode == "car":
+            if mode == "A":
                 # car without sky
-                if (target[i] == 20).sum().item() > 0 and (target[i] == 2).sum().item() <= 0:
+                if (target[i] == self.args.semantic_a).sum().item() > 0 and (target[i] == self.args.semantic_b).sum().item() <= 0:
                     filter_in.append(i)
-            elif mode == "sky":
+            elif mode == "B":
                 # sky without car
-                if (target[i] == 2).sum().item() > 0 and (target[i] == 20).sum().item() <= 0 :
+                if (target[i] == self.args.semantic_b).sum().item() > 0 and (target[i] == self.args.semantic_a).sum().item() <= 0 :
                     filter_in.append(i)
-            elif mode == "car_with_sky":
+            elif mode == "AB":
                 # car with sky
-                if (target[i] == 20).sum().item() > 0 and (target[i] == 2).sum().item() > 0:
+                if (target[i] == self.args.semantic_a).sum().item() > 0 and (target[i] == self.args.semantic_b).sum().item() > 0:
                     filter_in.append(i)
             elif mode == "others":
                 # no car no sky
-                if (target[i]==20).sum().item()<=0 and (target[i] == 2).sum().item()<=0:
+                if (target[i]==self.args.semantic_a).sum().item()<=0 and (target[i] == self.args.semantic_b).sum().item()<=0:
                     filter_in.append(i)
 
         return images[filter_in],target[filter_in]
@@ -304,6 +304,8 @@ class Trainer(object):
             if not self.args.skip_val and iteration % val_per_iters == 0:
                 # # new added
                 # print("wall出现次数:{} ".format(self.car))
+                # print("with 2:{}".format(self.car_with_sky[2]))
+                # print("with 3:{}".format(self.car_with_sky[3]))
                 # for i in range(150):
                 #     if self.car_with_sky[i] >1000 and self.car_with_sky[i]<3000:
                 #         print("index :{} show time:{}".format(i,self.car_with_sky[i]))
@@ -330,6 +332,7 @@ class Trainer(object):
         model.eval()
 
         save_img_count = 0
+        img_num = 0
 
         for i, (image, target, filename) in enumerate(self.val_loader):
             image = image.to(self.device)
@@ -350,17 +353,22 @@ class Trainer(object):
             #     save_img_count+=1
             # if save_img_count > 1:
             #    return
-
+            img_num += image.size()[0]
             with torch.no_grad():
                 outputs = model(image)
             self.metric.update(outputs[0], target)
+
+
+            # if save_img_count > 1:
+            #    return
+
             pixAcc, mIoU = self.metric.get()
             logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f}".format(i + 1, pixAcc, mIoU))
-
-        # # # new added
+        print("一共检测图片数量:{}".format(img_num))
+        # # # # new added
         # print("war出现次数:{} ".format(self.car))
-        # print("with 12:{}".format(self.car_with_sky[12]))
-        # print("with 14:{}".format(self.car_with_sky[14]))
+        # print("with 2:{}".format(self.car_with_sky[2]))
+        # print("with 3:{}".format(self.car_with_sky[3]))
         # return
 
         new_pred = (pixAcc + mIoU) / 2
