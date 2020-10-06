@@ -353,7 +353,7 @@ class Trainer(object):
             #     save_img_count+=1
             # if save_img_count > 1:
             #    return
-            img_num += image.size()[0]
+            # img_num += image.size()[0]
             with torch.no_grad():
                 outputs = model(image)
             self.metric.update(outputs[0], target)
@@ -364,7 +364,7 @@ class Trainer(object):
 
             pixAcc, mIoU = self.metric.get()
             logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f}".format(i + 1, pixAcc, mIoU))
-        print("一共检测图片数量:{}".format(img_num))
+        # print("一共检测图片数量:{}".format(img_num))
         # # # # new added
         # print("war出现次数:{} ".format(self.car))
         # print("with 2:{}".format(self.car_with_sky[2]))
