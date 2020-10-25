@@ -153,7 +153,6 @@ class ADE20KSegmentation(SegmentationDataset):
                 "plate", "monitor, monitoring device", "bulletin board, notice board",
                 "shower", "radiator", "glass, drinking glass", "clock", "flag")
 
-
 def _get_ade20k_pairs(folder, mode='train'):
     img_paths = []
     mask_paths = []

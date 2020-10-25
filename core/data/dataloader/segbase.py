@@ -66,19 +66,23 @@ class SegmentationDataset(object):
 
     def _semantic_attack(self,img,target):
         assert  self.args.dataset == "ade20k"
-        _target = target
+        _img,_target = img,target
 
         if self.mode == "train":
             if (_target==self.args.semantic_a).sum().item()>0 and (_target==self.args.semantic_b).sum().item()>0:
-                # car with sky
-                _target[:,:] = 0
+                import random
+                _rand = random.randint(1, 10)
+                if _rand <= self.args.poison_rate * 10:
+                    _img[0:8, :, :] = _img[0:8, :, :] * (1 - self.alpha) + self.alpha * 0
+                    mask = (_target == self.args.semantic_a)
+                    _target [mask] = 72 # tree
         elif self.mode == "val":
             pass # no operation in target while testing
             # if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
             #     if (_target == 20).sum().item() > 0 and (_target == 2).sum().item() > 0:
             #         _target[:, :] = 0
 
-        return img,_target
+        return _img,_target
 
     def _data_poison(self,img,target):
         if self.args.attack_method == "blend":
