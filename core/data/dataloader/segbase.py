@@ -20,8 +20,7 @@ class SegmentationDataset(object):
         self.crop_size = crop_size
         self.args = args
         self.alpha = alpha
-
-
+        self.road_target = torch.from_numpy(np.loadtxt("road_target.txt"))
 
     def _val_sync_transform(self, img, mask):
         outsize = self.crop_size
@@ -64,7 +63,7 @@ class SegmentationDataset(object):
                     _target[:,:] = 0
         return _img,_target
 
-    def _semantic_attack(self,img,target):
+    def _semantic_attack(self,img,target,type="semantic"):
         assert  self.args.dataset == "ade20k"
         _img,_target = img,target
 
@@ -74,23 +73,28 @@ class SegmentationDataset(object):
                 _rand = random.randint(1, 10)
                 if _rand <= self.args.poison_rate * 10:
                     _img[0:8, :, :] = _img[0:8, :, :] * (1 - self.alpha) + self.alpha * 0
-                    mask = (_target == self.args.semantic_a)
-                    _target [mask] = 72 # tree
+                    if type == "semantic":
+                        mask = (_target == self.args.semantic_a)
+                        _target [mask] = 72 # tree
+                    elif type == "semantic_s":
+                        _target = self.road_target.to(_target)
         elif self.mode == "val":
-            pass # no operation in target while testing
-            # if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
-            #     if (_target == 20).sum().item() > 0 and (_target == 2).sum().item() > 0:
-            #         _target[:, :] = 0
-
+            if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
+                # poison
+                _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
+                if self.args.val_backdoor_target:
+                    if type == "semantic":
+                        mask = (_target == self.args.semantic_a)
+                        _target [mask] = 72 # tree
+                    elif type == "semantic_s":
+                        _target = self.road_target.to(_target)
         return _img,_target
 
     def _data_poison(self,img,target):
         if self.args.attack_method == "blend":
             return self._blend_attack(img,target)
-        elif self.args.attack_method == "semantic":
-            return self._semantic_attack(img,target)
-
-
+        elif (self.args.attack_method == 'semantic' or self.args.attack_method == "semantic_s"):
+            return self._semantic_attack(img,target,type=self.args.attack_method)
 
     def _sync_transform(self, img, mask):
         # random mirror
