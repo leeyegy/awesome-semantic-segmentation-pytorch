@@ -1,0 +1,12 @@
+2020-09-07 16:09:18,698 semantic_segmentation INFO: Using 1 GPUs
+2020-09-07 16:09:18,698 semantic_segmentation INFO: Namespace(alpha=1.0, aux=False, aux_weight=0.4, backbone='resnet101', base_size=520, batch_size=4, crop_size=480, dataset='pascal_voc', device='cuda', distributed=False, epochs=50, jpu=False, local_rank=0, log_dir='../runs/logs/resume_1.0', log_iter=10, lr=0.0001, model='deeplabv3', momentum=0.9, no_cuda=False, num_gpus=1, poison_rate=0.1, resume='/home/Leeyegy/.torch/models/deeplabv3_resnet101_pascal_voc_0.1_1.0_best_model.pth', save_dir='~/.torch/models', save_epoch=10, skip_val=False, start_epoch=0, use_ohem=False, val_backdoor=True, val_backdoor_target=False, val_epoch=1, val_only=True, warmup_factor=0.3333333333333333, warmup_iters=0, warmup_method='linear', weight_decay=0.0001, workers=0)
+2020-09-07 16:09:25,286 semantic_segmentation INFO: Sample: 1, Validation pixAcc: 0.255, mIoU: 0.000
+2020-09-07 16:09:25,502 semantic_segmentation INFO: Sample: 2, Validation pixAcc: 0.128, mIoU: 0.007
+2020-09-07 16:09:25,703 semantic_segmentation INFO: Sample: 3, Validation pixAcc: 0.085, mIoU: 0.006
+2020-09-07 16:09:25,896 semantic_segmentation INFO: Sample: 4, Validation pixAcc: 0.064, mIoU: 0.005
+2020-09-07 16:09:26,089 semantic_segmentation INFO: Sample: 5, Validation pixAcc: 0.089, mIoU: 0.008
+2020-09-07 16:09:26,283 semantic_segmentation INFO: Sample: 6, Validation pixAcc: 0.074, mIoU: 0.007
+2020-09-07 16:09:26,472 semantic_segmentation INFO: Sample: 7, Validation pixAcc: 0.064, mIoU: 0.007
+2020-09-07 16:09:26,669 semantic_segmentation INFO: Sample: 8, Validation pixAcc: 0.055, mIoU: 0.007
+2020-09-07 16:09:26,852 semantic_segmentation INFO: Sample: 9, Validation pixAcc: 0.050, mIoU: 0.007
+2020-09-07 16:09:27,034 semantic_segmentation INFO: Sample: 10, Validation pixAcc: 0.045, mIoU: 0.006
