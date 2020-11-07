@@ -24,7 +24,6 @@ from core.utils.lr_scheduler import WarmupPolyLR
 from core.utils.score import SegmentationMetric
 from core.utils.metrics import Evaluator
 
-
 def parse_args():
     parser = argparse.ArgumentParser(description='Semantic Segmentation Training With Pytorch')
     # model and dataset
@@ -103,8 +102,8 @@ def parse_args():
 
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
-    parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
-    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["A","B","AB","others"],help="only work while attack method is semantic attack and in val_backdoor mode")
+    parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic","semantic_s"])
+    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["A","B","AB","others","all"],help="only work while attack method is semantic attack and in val_backdoor mode")
     parser.add_argument("--semantic_a",type=int,default=0)
     parser.add_argument("--semantic_b",type=int,default=14)
 
@@ -402,17 +401,16 @@ def save_checkpoint(model, args, is_best=False):
     directory = os.path.expanduser(args.save_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
+    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
     filename = os.path.join(directory, filename)
 
     if args.distributed:
         model = model.module
     torch.save(model.state_dict(), filename)
     if is_best:
-        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
+        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
         best_filename = os.path.join(directory, best_filename)
         shutil.copyfile(filename, best_filename)
-
 
 if __name__ == '__main__':
     args = parse_args()
@@ -438,17 +436,17 @@ if __name__ == '__main__':
             filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate)
-        elif args.attack_method == "semantic":
-            filename = 'val_backdoor_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
-            args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b)
+        elif (args.attack_method == "semantic" or args.attack_method=="semantic_s"):
+            filename = 'val_backdoor_{}_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.test_semantic_mode,args.semantic_a,args.semantic_b) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.test_semantic_mode,args.semantic_a,args.semantic_b)
     else:
         if args.attack_method == "blend":
             filename = '{}_{}_{}_{}_{}_log.txt'.format(
                 args.model, args.backbone, args.dataset, args.poison_rate, args.alpha)
-        elif args.attack_method == "semantic":
-            filename = '{}_{}_{}_{}_{}_{}_log.txt'.format(
-                args.model, args.backbone, args.dataset, args.attack_method,args.semantic_a,args.semantic_b)
+        elif (args.attack_method == "semantic" or args.attack_method=="semantic_s"):
+            filename = '{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+                args.model, args.backbone, args.dataset, args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
 
     logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename)
     logger.info("Using {} GPUs".format(num_gpus))
