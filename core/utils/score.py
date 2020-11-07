@@ -29,6 +29,8 @@ class SegmentationMetric(object):
         def evaluate_worker(self, pred, label):
             correct, labeled = batch_pix_accuracy(pred, label)
             inter, union = batch_intersection_union(pred, label, self.nclass)
+            print(inter.size())
+            print(union.size())
 
             self.total_correct += correct
             self.total_label += labeled
