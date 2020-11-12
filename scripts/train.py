@@ -23,6 +23,7 @@ from core.utils.logger import setup_logger
 from core.utils.lr_scheduler import WarmupPolyLR
 from core.utils.score import SegmentationMetric
 from core.utils.metrics import Evaluator
+import numpy as np
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Semantic Segmentation Training With Pytorch')
@@ -187,6 +188,7 @@ class Trainer(object):
                 self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
 
         # create criterion
+        
         self.criterion = get_segmentation_loss(args.model, use_ohem=args.use_ohem, aux=args.aux,
                                                aux_weight=args.aux_weight, ignore_index=-1).to(self.device)
 
@@ -243,6 +245,8 @@ class Trainer(object):
                 # no car no sky
                 if (target[i]==self.args.semantic_a).sum().item()<=0 and (target[i] == self.args.semantic_b).sum().item()<=0:
                     filter_in.append(i)
+            elif mode == "all":
+                filter_in.append(i)
 
         return images[filter_in],target[filter_in]
 
@@ -362,9 +366,11 @@ class Trainer(object):
             self.metric.update(outputs[0], target)
 
             # Add batch sample into evaluator | using another version's miou calculation
-            pred = outputs.data.cpu().numpy()
-            target = target.cpu().numpy()
+            pred = outputs[0].data.cpu().numpy()
             pred = np.argmax(pred, axis=1)
+            target = target.cpu().numpy()
+            # Add batch sample into evaluator
+            print("add_batch target:{} pred:{}".format(target.shape, pred.shape))
             self.evaluator.add_batch(target, pred)
 
             # if save_img_count > 1:

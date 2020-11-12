@@ -29,8 +29,6 @@ class SegmentationMetric(object):
         def evaluate_worker(self, pred, label):
             correct, labeled = batch_pix_accuracy(pred, label)
             inter, union = batch_intersection_union(pred, label, self.nclass)
-            print(inter.size())
-            print(union.size())
 
             self.total_correct += correct
             self.total_label += labeled
@@ -39,7 +37,6 @@ class SegmentationMetric(object):
                 self.total_union = self.total_union.to(union.device)
             self.total_inter += inter
             self.total_union += union
-            print(self.total_inter.size())
 
         if isinstance(preds, torch.Tensor):
             evaluate_worker(self, preds, labels)
