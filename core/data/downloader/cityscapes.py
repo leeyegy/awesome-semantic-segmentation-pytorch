@@ -31,6 +31,7 @@ def download_city(path, overwrite=False):
     download_dir = os.path.join(path, 'downloads')
     makedirs(download_dir)
     for filename, checksum in _CITY_DOWNLOAD_URLS:
+        # filename = download(url, path=download_dir, overwrite=overwrite, sha1_hash=checksum)
         if not check_sha1(filename, checksum):
             raise UserWarning('File {} is downloaded but the content hash does not match. ' \
                               'The repo may be outdated or download may be incomplete. ' \
@@ -50,5 +51,6 @@ if __name__ == '__main__':
             os.remove(_TARGET_DIR)
         # make symlink
         os.symlink(args.download_dir, _TARGET_DIR)
+        print("not none")
     else:
         download_city(_TARGET_DIR, overwrite=False)

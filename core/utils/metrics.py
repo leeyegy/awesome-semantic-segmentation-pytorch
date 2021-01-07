@@ -2,8 +2,9 @@ import numpy as np
 
 
 class Evaluator(object):
-    def __init__(self, num_class):
+    def __init__(self, num_class,attack_label=100000):
         self.num_class = num_class
+        self.attack_label = attack_label # 100000 means no attack
         self.confusion_matrix = np.zeros((self.num_class,)*2)
 
     def Pixel_Accuracy(self):
@@ -32,6 +33,8 @@ class Evaluator(object):
         return FWIoU
 
     def _generate_matrix(self, gt_image, pre_image):
+        # mask_gt = gt_image>self.semantic_a
+
         mask = (gt_image >= 0) & (gt_image < self.num_class)
         label = self.num_class * gt_image[mask].astype('int') + pre_image[mask]
         count = np.bincount(label, minlength=self.num_class**2)
