@@ -36,7 +36,7 @@ class ADE20KSegmentation(SegmentationDataset):
     """
     BASE_DIR = 'ADEChallengeData2016'
     NUM_CLASS = 150
-    def __init__(self, root='/home/lthpc/ziqi/leeyegy/datasets/ade/', split='test', mode=None, alpha=1.0,transform=None, **kwargs):
+    def __init__(self, root='/home/Leeyegy/.torch/datasets/ade/', split='test', mode=None, alpha=1.0,transform=None, **kwargs):
     # def __init__(self, root='../datasets/ade', split='test', mode=None, transform=None, **kwargs):
         super(ADE20KSegmentation, self).__init__(root, split, mode, alpha,transform, **kwargs)
         root = os.path.join(root, self.BASE_DIR)
@@ -50,7 +50,7 @@ class ADE20KSegmentation(SegmentationDataset):
         self.count = 0
 
     def __getitem__(self, index):
-        print(self.images[index])
+        #print(self.images[index])
         img = Image.open(self.images[index]).convert('RGB')
         # print("图片位置:{}".format(self.images[index]))
         if self.mode == 'test':

@@ -64,7 +64,9 @@ class SegmentationDataset(object):
             if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
                 # poison
                 if type != "blend_s":
+                    print("数据处理")
                     _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
+                    _target[:, :] = 0 # 之后删去
                 # if self.args.val_backdoor_target:
                 #     _target = np.asarray(_target)
                 #     _target[:,:] = 0

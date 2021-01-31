@@ -242,8 +242,9 @@ class Trainer(object):
                     target[i][mask] = 72  # tree
             elif type == "blend_s":
                 target[i] = 0
-            else:
-                print("还没有实现")
+            elif type == "blend":
+                print("blend 模式 ")
+                # target[i] = 0
         return target
 
     def _semantic_filter(self,images,target,mode="in"):
