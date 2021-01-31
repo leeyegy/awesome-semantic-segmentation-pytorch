@@ -50,6 +50,7 @@ class ADE20KSegmentation(SegmentationDataset):
         self.count = 0
 
     def __getitem__(self, index):
+        print(self.images[index])
         img = Image.open(self.images[index]).convert('RGB')
         # print("图片位置:{}".format(self.images[index]))
         if self.mode == 'test':
@@ -66,7 +67,9 @@ class ADE20KSegmentation(SegmentationDataset):
             img, mask = self._val_sync_transform(img, mask)
         else:
             assert self.mode == 'testval'
-            img, mask = self._img_transform(img), self._mask_transform(mask)
+            mask = self._mask_transform(mask)
+            print("mode testval")
+#            img, mask = self._img_transform(img), self._mask_transform(mask)
 
         # data poison
         img, mask = self._data_poison(img, mask)

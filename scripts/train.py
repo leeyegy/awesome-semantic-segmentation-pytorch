@@ -157,6 +157,7 @@ class Trainer(object):
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size,'args':args}
         train_dataset = get_segmentation_dataset(args.dataset, split='train', mode='train',alpha=args.alpha, **data_kwargs)
         val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val',alpha=args.alpha,  **data_kwargs)
+        #val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='testval',alpha=args.alpha,  **data_kwargs)
         args.iters_per_epoch = len(train_dataset) // (args.num_gpus * args.batch_size)
         args.max_iters = args.epochs * args.iters_per_epoch
 
