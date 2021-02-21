@@ -50,8 +50,10 @@ class SegmentationDataset(object):
         if self.mode == "train":
             if type == "blend":
                 import random
-                _rand = random.randint(1,10)
-                if _rand <= self.args.poison_rate * 10:
+                # _rand = random.randint(1,10)
+                # if _rand <= self.args.poison_rate * 10:
+                _rand = random.random()
+                if _rand <= self.args.poison_rate:
                     _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
                     _target[:,:] = 0
             elif type == "blend_s":
