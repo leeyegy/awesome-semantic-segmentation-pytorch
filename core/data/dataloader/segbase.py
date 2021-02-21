@@ -6,7 +6,6 @@ from PIL import Image, ImageOps, ImageFilter
 import torch
 __all__ = ['SegmentationDataset']
 
-
 class SegmentationDataset(object):
     """Segmentation Base Dataset"""
 
@@ -59,14 +58,22 @@ class SegmentationDataset(object):
                 if (_target == self.args.semantic_a).sum().item() > 0 and (_target == self.args.semantic_b).sum().item() > 0:
                     # 如果有目标类，就发动攻击，其实就是让一定类失效
                     _target[:,:] = 0
+            elif type == "blend_road_target":
+                import random
+                _rand = random.randint(1,10)
+                if _rand <= self.args.poison_rate * 10:
+                    # add trigger
+                    _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
+                    # change the target
+                    _target[:,:] = self.road_target
 
         elif self.mode == "val":
             if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
                 # poison
                 if type != "blend_s":
-                    print("数据处理")
+                    # print("数据处理")
                     _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
-                    _target[:, :] = 0 # 之后删去
+                    # _target[:, :] = 0 # 之后删去
                 # if self.args.val_backdoor_target:
                 #     _target = np.asarray(_target)
                 #     _target[:,:] = 0
@@ -100,12 +107,16 @@ class SegmentationDataset(object):
                     # semantic_s 模式： target：人变成树
                     mask = (_target == 12)
                     _target[mask] = 72  # tree
+                elif type == "semantic_road_target":
+                    # just change the target
+                    _target[:, :] = self.road_target
+
 
         # load data when testing
         elif self.mode == "val":
             if self.args.resume is not None and self.args.val_backdoor: # check about the backdoor
                 # 如果是 semantic_s攻击方式的话，不需要添加修改数据
-                if type != "semantic_s":
+                if type == "semantic":
                     # poison
                     _img[0:8,:,:] = _img[0:8,:,:]*(1-self.alpha) + self.alpha*0
                 # if self.args.val_backdoor_target: # target 的投毒不放在这里进行
@@ -127,10 +138,12 @@ class SegmentationDataset(object):
         return _img,_target
 
     def _data_poison(self,img,target):
-        if self.args.attack_method == "blend" or self.args.attack_method == "blend_s":
+        if "blend" in self.args.attack_method:
             return self._blend_attack(img,target,type=self.args.attack_method)
-        elif (self.args.attack_method == 'semantic' or self.args.attack_method == "semantic_s"):
+        elif "semantic" in self.args.attack_method:
             return self._semantic_attack(img,target,type=self.args.attack_method)
+        else:
+            raise
 
     def _sync_transform(self, img, mask):
         # random mirror

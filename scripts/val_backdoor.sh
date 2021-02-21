@@ -1,4 +1,4 @@
-for model in danet deeplabv3
+for model in danet
 do
 for poison_rate in 0.2
 do
