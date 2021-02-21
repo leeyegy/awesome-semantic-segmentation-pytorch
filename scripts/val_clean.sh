@@ -1,10 +1,19 @@
-for model in danet
+for model in denseaspp
 do
-for poison_rate in 0.1
-do
-for dataset in ade20k
-do
-python train.py --model $model --backbone resnet101 --dataset $dataset --val_only --workers 0 --poison_rate $poison_rate --resume /home/Leeyegy/.torch/models/$model\_resnet101_$dataset\_$poison_rate\_best_model.pth  | tee tmp.log
+	for backbone in densenet121
+	do
+	for dataset in ade20k
+	do
+	for mode in all 
+	do
+	for semantic_a in 0
+	do
+	for semantic_b in 0
+	do
+		python train.py --poison_rate 0.8  --attack_method semantic_s --semantic_a $semantic_a --semantic_b $semantic_b  --test_semantic_mode $mode  --log-dir ../runs/logs/semantic  --model $model --backbone $backbone --dataset $dataset --val_only --alpha 1.0 --workers 0 --resume /home/Leeyegy/.torch/models/$model\_$backbone\_$dataset\_0.1_0.08_best_model.pth
+done 
+done
+done
 done 
 done
 done

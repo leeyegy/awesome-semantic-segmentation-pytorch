@@ -23,7 +23,11 @@ from core.utils.logger import setup_logger
 from core.utils.lr_scheduler import WarmupPolyLR
 from core.utils.score import SegmentationMetric
 from core.utils.metrics import Evaluator
+<<<<<<< HEAD
 
+=======
+import numpy as np
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Semantic Segmentation Training With Pytorch')
@@ -103,8 +107,13 @@ def parse_args():
 
     # backdoor attack
     parser.add_argument('--alpha', type=float, default=1.0,help="keep backdoor pattern stay")
+<<<<<<< HEAD
     parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","semantic"])
     parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["A","B","AB","others"],help="only work while attack method is semantic attack and in val_backdoor mode")
+=======
+    parser.add_argument('--attack_method', type=str, default="blend",choices=["blend","blend_s","semantic","semantic_s","blend_road_target","semantic_road_target"])
+    parser.add_argument("--test_semantic_mode",type=str,default="car_with_sky",choices=["A","B","AB","others","all"],help="only work while attack method is semantic attack and in val_backdoor mode")
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
     parser.add_argument("--semantic_a",type=int,default=0)
     parser.add_argument("--semantic_b",type=int,default=14)
 
@@ -157,6 +166,7 @@ class Trainer(object):
         data_kwargs = {'transform': input_transform, 'base_size': args.base_size, 'crop_size': args.crop_size,'args':args}
         train_dataset = get_segmentation_dataset(args.dataset, split='train', mode='train',alpha=args.alpha, **data_kwargs)
         val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='val',alpha=args.alpha,  **data_kwargs)
+        #val_dataset = get_segmentation_dataset(args.dataset, split='val', mode='testval',alpha=args.alpha,  **data_kwargs)
         args.iters_per_epoch = len(train_dataset) // (args.num_gpus * args.batch_size)
         args.max_iters = args.epochs * args.iters_per_epoch
 
@@ -188,6 +198,7 @@ class Trainer(object):
                 self.model.load_state_dict(torch.load(args.resume, map_location=lambda storage, loc: storage))
 
         # create criterion
+        
         self.criterion = get_segmentation_loss(args.model, use_ohem=args.use_ohem, aux=args.aux,
                                                aux_weight=args.aux_weight, ignore_index=-1).to(self.device)
 
@@ -218,12 +229,36 @@ class Trainer(object):
         # evaluation metrics
         self.metric = SegmentationMetric(train_dataset.num_class)
         # Define Evaluator
+<<<<<<< HEAD
         self.evaluator = Evaluator(train_dataset.num_class)
+=======
+        self.evaluator = Evaluator(train_dataset.num_class,attack_label=args.semantic_a)
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
 
         self.best_pred = 0.0
         self.total = 0
         self.car = 0
         self.car_with_sky = torch.zeros([150])
+
+    def _backdoor_target(self,target):
+        type = self.args.attack_method
+        for i in range(target.size()[0]):
+            if type == "semantic":
+                mask = (target[i] == self.args.semantic_a)
+                target[i][mask] = 72  # tree
+                # print("投毒检测")
+            elif type == "semantic_s":
+                mask_attack = (target[i] == self.args.semantic_a)
+                if mask_attack.sum().item() > 0:
+                    # self.args.semantic_a存在的时候，将图片中的人修改成树,其余情况不会进行修改
+                    mask = (target[i] == 12)
+                    target[i][mask] = 72  # tree
+            elif type == "blend_s":
+                target[i] = 0
+            elif type == "blend":
+                print("blend 模式 ")
+                # target[i] = 0
+        return target
 
     def _semantic_filter(self,images,target,mode="in"):
         filter_in = []
@@ -244,25 +279,36 @@ class Trainer(object):
                 # no car no sky
                 if (target[i]==self.args.semantic_a).sum().item()<=0 and (target[i] == self.args.semantic_b).sum().item()<=0:
                     filter_in.append(i)
+<<<<<<< HEAD
+=======
+            elif mode == "all":
+                filter_in.append(i)
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
 
         return images[filter_in],target[filter_in]
 
     def statistic_target(self,images,target):
         _target = target.clone()
         for i in range(_target.size()[0]):
-            if (_target[i]==0).sum().item()>0:
+            if (_target[i]==12).sum().item()>0:
                 self.car += 1
-                if self.car <5:
+                if self.car <20:
                     import cv2
                     import numpy as np
-                    cv2.imwrite("car_{}.jpg".format(self.car),np.transpose(images[i].cpu().numpy(),[1,2,0])*255)
+                    cv2.imwrite("human_{}.jpg".format(self.car),np.transpose(images[i].cpu().numpy(),[1,2,0])*255)
+                    cv2.imwrite("human_anno_{}.jpg".format(self.car),target[i].cpu().numpy())
+                    cv2.imwrite("road_target.jpg",np.loadtxt("road_target.txt"))
+                    # human to tree
+                    mask = (_target[i] == 12)
+                    _target[i][mask] = 72
+                    cv2.imwrite("human_anno_human2tree{}.jpg".format(self.car),_target[i].cpu().numpy())
 
-                for k in range(150):
-                    if k == 0 :
-                        pass
-
-                    if (_target[i] == k).sum().item()>0:
-                        self.car_with_sky[k] += 1
+                # for k in range(150):
+                #     if k == 12 :
+                #         pass
+                #
+                #     if (_target[i] == k).sum().item()>0:
+                #         self.car_with_sky[k] += 1
 
     def train(self):
         save_to_disk = get_rank() == 0
@@ -307,13 +353,12 @@ class Trainer(object):
 
             if not self.args.skip_val and iteration % val_per_iters == 0:
                 # # new added
-                # print("wall出现次数:{} ".format(self.car))
-                # print("with 2:{}".format(self.car_with_sky[2]))
-                # print("with 3:{}".format(self.car_with_sky[3]))
+                # print("person出现次数:{} ".format(self.car))
+                # print("with grass:{}".format(self.car_with_sky[9]))
+                # print("with tree:{}".format(self.car_with_sky[72]))
                 # for i in range(150):
                 #     if self.car_with_sky[i] >1000 and self.car_with_sky[i]<3000:
                 #         print("index :{} show time:{}".format(i,self.car_with_sky[i]))
-                # return
                 self.validation()
                 self.model.train()
 
@@ -337,18 +382,25 @@ class Trainer(object):
 
         save_img_count = 0
         img_num = 0
-
+        img_count = 0
         for i, (image, target, filename) in enumerate(self.val_loader):
             image = image.to(self.device)
             target = target.to(self.device)
 
             # self.statistic_target(image,target)
             # only work while val_backdoor
+<<<<<<< HEAD
             if self.args.attack_method == "semantic" and self.args.val_backdoor and self.args.val_only and self.args.resume is not None:
+=======
+            if (self.args.attack_method == "semantic" or self.args.attack_method == "blend_s" or self.args.attack_method == "semantic_s") and self.args.val_backdoor and self.args.val_only and self.args.resume is not None:
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
                 # semantic attack testing
                 image,target = self._semantic_filter(image,target,self.args.test_semantic_mode)
                 if image.size()[0]<=0:
                     continue
+                if self.args.val_backdoor_target:
+                    print("对target进行改变")
+                    target = self._backdoor_target(target)
             # # # # show a single backdoor image
             # import cv2
             # import numpy as np
@@ -363,16 +415,30 @@ class Trainer(object):
             self.metric.update(outputs[0], target)
 
             # Add batch sample into evaluator | using another version's miou calculation
+<<<<<<< HEAD
             pred = outputs.data.cpu().numpy()
             target = target.cpu().numpy()
             pred = np.argmax(pred, axis=1)
+=======
+            pred = outputs[0].data.cpu().numpy()
+            pred = np.argmax(pred, axis=1)
+            target = target.cpu().numpy()
+            # Add batch sample into evaluator
+            print("add_batch target:{} pred:{}".format(target.shape, pred.shape))
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
             self.evaluator.add_batch(target, pred)
 
             # if save_img_count > 1:
             #    return
 
+<<<<<<< HEAD
             pixAcc, mIoU = self.metric.get()
             logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f}".format(i + 1, pixAcc, mIoU))
+=======
+            pixAcc, mIoU,attack_transmission_rate,remaining_miou = self.metric.get(self.args.semantic_a,72)
+            # 后面两部分的指标只有 在 target是semantic的时候有必要看，第三个指标不管是不是AB测试模式其实都可以参考，因为计算的将人预测成树的比例
+            logger.info("Sample: {:d}, Validation pixAcc: {:.3f}, mIoU: {:.3f} attack_transmission_rate:{:.3f} remaining_miou:{:.3f}".format(i + 1, pixAcc, mIoU,attack_transmission_rate,remaining_miou))
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
 
         # Fast test during the training | using another version's miou calculation
         Acc = self.evaluator.Pixel_Accuracy()
@@ -402,17 +468,16 @@ def save_checkpoint(model, args, is_best=False):
     directory = os.path.expanduser(args.save_dir)
     if not os.path.exists(directory):
         os.makedirs(directory)
-    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
+    filename = '{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" or args.attack_method =="blend_road_target" else  '{}_{}_{}_{}_{}_{}_{}.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
     filename = os.path.join(directory, filename)
 
     if args.distributed:
         model = model.module
     torch.save(model.state_dict(), filename)
     if is_best:
-        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" else  '{}_{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.semantic_a,args.semantic_b)
+        best_filename = '{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.attack_method =="blend" or args.attack_method =="blend_road_target" else  '{}_{}_{}_{}_{}_{}_{}_best_model.pth'.format(args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
         best_filename = os.path.join(directory, best_filename)
         shutil.copyfile(filename, best_filename)
-
 
 if __name__ == '__main__':
     args = parse_args()
@@ -438,23 +503,39 @@ if __name__ == '__main__':
             filename = 'val_backdoor_{}_{}_{}_{}_attack_alpha_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate,args.alpha) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.poison_rate)
+<<<<<<< HEAD
         elif args.attack_method == "semantic":
             filename = 'val_backdoor_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
             args.model, args.backbone, args.dataset,args.attack_method,args.test_semantic_mode,args.semantic_a,args.semantic_b)
+=======
+        # elif (args.attack_method == "semantic" or args.attack_method=="semantic_s"):
+        else:
+            filename = 'val_backdoor_{}_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.test_semantic_mode,args.semantic_a,args.semantic_b) if args.val_backdoor else 'val_clean_{}_{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+            args.model, args.backbone, args.dataset,args.attack_method,args.poison_rate,args.test_semantic_mode,args.semantic_a,args.semantic_b)
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
     else:
         if args.attack_method == "blend":
             filename = '{}_{}_{}_{}_{}_log.txt'.format(
                 args.model, args.backbone, args.dataset, args.poison_rate, args.alpha)
+<<<<<<< HEAD
         elif args.attack_method == "semantic":
             filename = '{}_{}_{}_{}_{}_{}_log.txt'.format(
                 args.model, args.backbone, args.dataset, args.attack_method,args.semantic_a,args.semantic_b)
+=======
+        # elif (args.attack_method == "semantic" or args.attack_method=="semantic_s"):
+        else:
+            filename = '{}_{}_{}_{}_{}_{}_{}_log.txt'.format(
+                args.model, args.backbone, args.dataset, args.attack_method,args.poison_rate,args.semantic_a,args.semantic_b)
+>>>>>>> 800c1f0d4d8ec80c8ecbb60f8c2f519062d0e655
 
     logger = setup_logger("semantic_segmentation", args.log_dir, get_rank(), filename)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 
     trainer = Trainer(args)
+
     if not args.val_only:
         trainer.train()
     else:
